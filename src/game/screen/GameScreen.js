@@ -39,6 +39,7 @@ export default class GameScreen extends Screen{
 		TweenLite.to(this.buttonShape.scale, 1, {y:50});
 	}
 	toGame(){
+
 		this.screenManager.change("INIT");
 	}
 
@@ -50,7 +51,7 @@ export default class GameScreen extends Screen{
 	    let button = new PIXI.Container()
 	    this.buttonShape = new PIXI.Graphics()
 	    let color = utils.getRandomValue(config.palette.colors80, [config.palette.gameScreen80] );
-	   
+	   	config.palette.initScreen80 = color;
 	   	let alphaBG = new PIXI.Graphics()
 	    alphaBG.beginFill(0);	    
 	    alphaBG.drawCircle( -10, 10, config.buttonRadius );

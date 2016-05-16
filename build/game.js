@@ -29804,19 +29804,19 @@
 	
 	var _Bunny2 = _interopRequireDefault(_Bunny);
 	
-	var _EffectLayer = __webpack_require__(150);
+	var _EffectLayer = __webpack_require__(143);
 	
 	var _EffectLayer2 = _interopRequireDefault(_EffectLayer);
 	
-	var _GameScreen = __webpack_require__(143);
+	var _GameScreen = __webpack_require__(146);
 	
 	var _GameScreen2 = _interopRequireDefault(_GameScreen);
 	
-	var _InitScreen = __webpack_require__(148);
+	var _InitScreen = __webpack_require__(149);
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _ScreenManager = __webpack_require__(149);
+	var _ScreenManager = __webpack_require__(150);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
 	
@@ -30040,27 +30040,17 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-	
 	var _pixi = __webpack_require__(1);
 	
 	var _pixi2 = _interopRequireDefault(_pixi);
-	
-	var _gsap = __webpack_require__(144);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
 	
 	var _config = __webpack_require__(140);
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(146);
+	var _gsap = __webpack_require__(144);
 	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	var _Screen2 = __webpack_require__(147);
-	
-	var _Screen3 = _interopRequireDefault(_Screen2);
+	var _gsap2 = _interopRequireDefault(_gsap);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -30070,89 +30060,93 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var GameScreen = function (_Screen) {
-		_inherits(GameScreen, _Screen);
+	var EffectLayer = function (_PIXI$Container) {
+		_inherits(EffectLayer, _PIXI$Container);
 	
-		function GameScreen(label) {
-			_classCallCheck(this, GameScreen);
+		function EffectLayer(screenManager) {
+			_classCallCheck(this, EffectLayer);
 	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(GameScreen).call(this, label));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EffectLayer).call(this));
+	
+			_this.screenManager = screenManager;
+	
+			_this.tvLines = new _pixi2.default.extras.TilingSprite(_pixi2.default.Texture.fromImage('./assets/tvlines.png', _config2.default.width, _config2.default.height));
+			_this.addChild(_this.tvLines);
+			_this.tvLines.width = _config2.default.width;
+			_this.tvLines.height = _config2.default.height;
+	
+			_this.tvLines.blendMode = _pixi2.default.BLEND_MODES.ADD;
+	
+			_this.tvShape = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVsoft.png'));
+			_this.addChild(_this.tvShape);
+	
+			_this.tvShape.blendMode = _pixi2.default.BLEND_MODES.OVERLAY;
+	
+			_this.rgpSplit = new _pixi2.default.filters.RGBSplitFilter();
+			_this.rgpSplit.red = new _pixi2.default.Point(1, 1);
+			_this.rgpSplit.green = new _pixi2.default.Point(-1, -1);
+			_this.rgpSplit.blue = new _pixi2.default.Point(1, -1);
+			_this.rgpSplit.padding = 5;
+			var displacementTexture = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVDisplacement.jpg'));
+			_this.addChild(displacementTexture);
+			_this.displacementFilter = new _pixi2.default.filters.DisplacementFilter(displacementTexture);
+			displacementTexture.anchor.set(0.5, 0.5);
+			displacementTexture.position.set(_config2.default.width / 2, _config2.default.height / 2);
+	
+			_this.glitch1 = new _pixi2.default.extras.TilingSprite(_pixi2.default.Texture.fromImage('./assets/glitch1.jpg', 200, 200));
+			//this.addChild(this.glitch1)
+			_this.glitch1.width = 200;
+			_this.glitch1.height = _config2.default.height;
+			_this.displacementFilterGlitch1 = new _pixi2.default.filters.DisplacementFilter(_this.glitch1);
+	
+			_this.screenManager.filters = [_this.rgpSplit, _this.displacementFilter, _this.displacementFilterGlitch1];
+	
+			return _this;
 		}
 	
-		_createClass(GameScreen, [{
-			key: 'build',
-			value: function build() {
-				_get(Object.getPrototypeOf(GameScreen.prototype), 'build', this).call(this);
-	
-				this.background = new _pixi2.default.Graphics();
-				this.background.beginFill(_config2.default.palette.gameScreen80);
-				this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
-				this.addChild(this.background);
-	
-				this.screenContainer = new _pixi2.default.Container();
-				this.addChild(this.screenContainer);
-	
-				this.backButton = this.createButton();
-				this.addChild(this.screenContainer);
-	
-				this.description = new _pixi2.default.Text('The game will be here!', { font: '36px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
-				this.screenContainer.addChild(this.description);
-				this.description.position.set(_config2.default.width / 2 - this.description.width / 2, _config2.default.height / 2 - this.description.height / 2);
-	
-				this.screenContainer.addChild(this.backButton);
-	
-				this.backButton.position.set(_config2.default.buttonRadius + _config2.default.bounds.x, _config2.default.buttonRadius + _config2.default.bounds.y);
-				_gsap2.default.from(this.backButton.scale, 1, { x: 0, y: 0, ease: "easeOutElastic" });
-				this.backButton.on('tap', this.onButtonDown.bind(this)).on('click', this.onButtonDown.bind(this));
-			}
-		}, {
-			key: 'onButtonDown',
-			value: function onButtonDown(test) {
-				this.backButton.interactive = false;
-				_gsap2.default.to(this.buttonShape.scale, 0.8, { x: 50, onComplete: this.toGame, onCompleteScope: this });
-				_gsap2.default.to(this.buttonShape.scale, 1, { y: 50 });
-			}
-		}, {
-			key: 'toGame',
-			value: function toGame() {
-				this.screenManager.change("INIT");
-			}
-		}, {
+		_createClass(EffectLayer, [{
 			key: 'update',
 			value: function update(delta) {
-				_get(Object.getPrototypeOf(GameScreen.prototype), 'update', this).call(this, delta);
+	
+				this.tvLines.tilePosition.y += 1;
 			}
 		}, {
-			key: 'createButton',
-			value: function createButton() {
-				var button = new _pixi2.default.Container();
-				this.buttonShape = new _pixi2.default.Graphics();
-				var color = _utils2.default.getRandomValue(_config2.default.palette.colors80, [_config2.default.palette.gameScreen80]);
+			key: 'shake',
+			value: function shake(force, steps, time) {
+				if (!force) {
+					force = 1;
+				}
+				if (!steps) {
+					steps = 4;
+				}
+				if (!time) {
+					time = 1;
+				}
+				var timelinePosition = new TimelineLite();
+				var timelineSplitRed = new TimelineLite();
+				var timelineSplitGreen = new TimelineLite();
+				var timelineSplitBlue = new TimelineLite();
+				var positionForce = force * 30;
+				var spliterForce = force * 20;
+				var speed = time / steps;
+				for (var i = 4; i >= 0; i--) {
+					timelinePosition.append(_gsap2.default.to(this.screenManager.position, speed, { x: Math.random() * positionForce - positionForce / 2, y: Math.random() * positionForce - positionForce / 2, ease: "easeNoneLinear" }));
+					timelineSplitRed.append(_gsap2.default.to(this.rgpSplit.red, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
+					timelineSplitGreen.append(_gsap2.default.to(this.rgpSplit.green, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
+					timelineSplitBlue.append(_gsap2.default.to(this.rgpSplit.blue, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
+				};
 	
-				var alphaBG = new _pixi2.default.Graphics();
-				alphaBG.beginFill(0);
-				alphaBG.drawCircle(-10, 10, _config2.default.buttonRadius);
-				alphaBG.alpha = 0.15;
-				_utils2.default.applyPositionCorrection(button.addChild(_utils2.default.addToContainer(alphaBG)));
-	
-				this.buttonShape.beginFill(color);
-				this.buttonShape.drawCircle(0, 0, _config2.default.buttonRadius);
-				_utils2.default.applyPositionCorrection(button.addChild(this.buttonShape));
-				//utils.applyPositionCorrection();
-				button.interactive = true;
-				button.buttonMode = true;
-	
-				_utils2.default.addMockObject(button);
-	
-				console.log(button);
-				return button;
+				timelinePosition.append(_gsap2.default.to(this.screenManager.position, speed, { x: 0, y: 0, ease: "easeeaseNoneLinear" }));
+				timelineSplitRed.append(_gsap2.default.to(this.rgpSplit.red, speed, { x: 1, y: 1, ease: "easeNoneLinear" }));
+				timelineSplitGreen.append(_gsap2.default.to(this.rgpSplit.green, speed, { x: -1, y: -1, ease: "easeNoneLinear" }));
+				timelineSplitBlue.append(_gsap2.default.to(this.rgpSplit.blue, speed, { x: 1, y: -1, ease: "easeNoneLinear" }));
 			}
 		}]);
 	
-		return GameScreen;
-	}(_Screen3.default);
+		return EffectLayer;
+	}(_pixi2.default.Container);
 	
-	exports.default = GameScreen;
+	exports.default = EffectLayer;
 
 /***/ },
 /* 144 */
@@ -37820,6 +37814,133 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _gsap = __webpack_require__(144);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(140);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(147);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(148);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var GameScreen = function (_Screen) {
+		_inherits(GameScreen, _Screen);
+	
+		function GameScreen(label) {
+			_classCallCheck(this, GameScreen);
+	
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(GameScreen).call(this, label));
+		}
+	
+		_createClass(GameScreen, [{
+			key: 'build',
+			value: function build() {
+				_get(Object.getPrototypeOf(GameScreen.prototype), 'build', this).call(this);
+	
+				this.background = new _pixi2.default.Graphics();
+				this.background.beginFill(_config2.default.palette.gameScreen80);
+				this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
+				this.addChild(this.background);
+	
+				this.screenContainer = new _pixi2.default.Container();
+				this.addChild(this.screenContainer);
+	
+				this.backButton = this.createButton();
+				this.addChild(this.screenContainer);
+	
+				this.description = new _pixi2.default.Text('The game will be here!', { font: '36px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.screenContainer.addChild(this.description);
+				this.description.position.set(_config2.default.width / 2 - this.description.width / 2, _config2.default.height / 2 - this.description.height / 2);
+	
+				this.screenContainer.addChild(this.backButton);
+	
+				this.backButton.position.set(_config2.default.buttonRadius + _config2.default.bounds.x, _config2.default.buttonRadius + _config2.default.bounds.y);
+				_gsap2.default.from(this.backButton.scale, 1, { x: 0, y: 0, ease: "easeOutElastic" });
+				this.backButton.on('tap', this.onButtonDown.bind(this)).on('click', this.onButtonDown.bind(this));
+			}
+		}, {
+			key: 'onButtonDown',
+			value: function onButtonDown(test) {
+				this.backButton.interactive = false;
+				_gsap2.default.to(this.buttonShape.scale, 0.8, { x: 50, onComplete: this.toGame, onCompleteScope: this });
+				_gsap2.default.to(this.buttonShape.scale, 1, { y: 50 });
+			}
+		}, {
+			key: 'toGame',
+			value: function toGame() {
+	
+				this.screenManager.change("INIT");
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {
+				_get(Object.getPrototypeOf(GameScreen.prototype), 'update', this).call(this, delta);
+			}
+		}, {
+			key: 'createButton',
+			value: function createButton() {
+				var button = new _pixi2.default.Container();
+				this.buttonShape = new _pixi2.default.Graphics();
+				var color = _utils2.default.getRandomValue(_config2.default.palette.colors80, [_config2.default.palette.gameScreen80]);
+				_config2.default.palette.initScreen80 = color;
+				var alphaBG = new _pixi2.default.Graphics();
+				alphaBG.beginFill(0);
+				alphaBG.drawCircle(-10, 10, _config2.default.buttonRadius);
+				alphaBG.alpha = 0.15;
+				_utils2.default.applyPositionCorrection(button.addChild(_utils2.default.addToContainer(alphaBG)));
+	
+				this.buttonShape.beginFill(color);
+				this.buttonShape.drawCircle(0, 0, _config2.default.buttonRadius);
+				_utils2.default.applyPositionCorrection(button.addChild(this.buttonShape));
+				//utils.applyPositionCorrection();
+				button.interactive = true;
+				button.buttonMode = true;
+	
+				_utils2.default.addMockObject(button);
+	
+				console.log(button);
+				return button;
+			}
+		}]);
+	
+		return GameScreen;
+	}(_Screen3.default);
+	
+	exports.default = GameScreen;
+
+/***/ },
+/* 147 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
@@ -37879,7 +38000,7 @@
 	};
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38014,7 +38135,7 @@
 	exports.default = Screen;
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38039,11 +38160,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(146);
+	var _utils = __webpack_require__(147);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(147);
+	var _Screen2 = __webpack_require__(148);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
@@ -38181,7 +38302,7 @@
 	exports.default = InitScreen;
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38275,126 +38396,6 @@
 	}(_pixi2.default.Container);
 	
 	exports.default = ScreenManager;
-
-/***/ },
-/* 150 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var _pixi2 = _interopRequireDefault(_pixi);
-	
-	var _config = __webpack_require__(140);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _gsap = __webpack_require__(144);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var EffectLayer = function (_PIXI$Container) {
-		_inherits(EffectLayer, _PIXI$Container);
-	
-		function EffectLayer(screenManager) {
-			_classCallCheck(this, EffectLayer);
-	
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EffectLayer).call(this));
-	
-			_this.screenManager = screenManager;
-	
-			_this.tvLines = new _pixi2.default.extras.TilingSprite(_pixi2.default.Texture.fromImage('./assets/tvlines.png', _config2.default.width, _config2.default.height));
-			_this.addChild(_this.tvLines);
-			_this.tvLines.width = _config2.default.width;
-			_this.tvLines.height = _config2.default.height;
-	
-			_this.tvLines.blendMode = _pixi2.default.BLEND_MODES.ADD;
-	
-			_this.tvShape = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVsoft.png'));
-			_this.addChild(_this.tvShape);
-	
-			_this.tvShape.blendMode = _pixi2.default.BLEND_MODES.OVERLAY;
-	
-			_this.rgpSplit = new _pixi2.default.filters.RGBSplitFilter();
-			_this.rgpSplit.red = new _pixi2.default.Point(1, 1);
-			_this.rgpSplit.green = new _pixi2.default.Point(-1, -1);
-			_this.rgpSplit.blue = new _pixi2.default.Point(1, -1);
-			_this.rgpSplit.padding = 5;
-			var displacementTexture = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVDisplacement.jpg'));
-			_this.addChild(displacementTexture);
-			_this.displacementFilter = new _pixi2.default.filters.DisplacementFilter(displacementTexture);
-			displacementTexture.anchor.set(0.5, 0.5);
-			displacementTexture.position.set(_config2.default.width / 2, _config2.default.height / 2);
-	
-			_this.glitch1 = new _pixi2.default.extras.TilingSprite(_pixi2.default.Texture.fromImage('./assets/glitch1.jpg', 200, 200));
-			//this.addChild(this.glitch1)
-			_this.glitch1.width = 200;
-			_this.glitch1.height = _config2.default.height;
-			_this.displacementFilterGlitch1 = new _pixi2.default.filters.DisplacementFilter(_this.glitch1);
-	
-			_this.screenManager.filters = [_this.rgpSplit, _this.displacementFilter, _this.displacementFilterGlitch1];
-	
-			return _this;
-		}
-	
-		_createClass(EffectLayer, [{
-			key: 'update',
-			value: function update(delta) {
-	
-				this.tvLines.tilePosition.y += 1;
-			}
-		}, {
-			key: 'shake',
-			value: function shake(force, steps, time) {
-				if (!force) {
-					force = 1;
-				}
-				if (!steps) {
-					steps = 4;
-				}
-				if (!time) {
-					time = 1;
-				}
-				var timelinePosition = new TimelineLite();
-				var timelineSplitRed = new TimelineLite();
-				var timelineSplitGreen = new TimelineLite();
-				var timelineSplitBlue = new TimelineLite();
-				var positionForce = force * 30;
-				var spliterForce = force * 20;
-				var speed = time / steps;
-				for (var i = 4; i >= 0; i--) {
-					timelinePosition.append(_gsap2.default.to(this.screenManager.position, speed, { x: Math.random() * positionForce - positionForce / 2, y: Math.random() * positionForce - positionForce / 2, ease: "easeNoneLinear" }));
-					timelineSplitRed.append(_gsap2.default.to(this.rgpSplit.red, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
-					timelineSplitGreen.append(_gsap2.default.to(this.rgpSplit.green, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
-					timelineSplitBlue.append(_gsap2.default.to(this.rgpSplit.blue, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
-				};
-	
-				timelinePosition.append(_gsap2.default.to(this.screenManager.position, speed, { x: 0, y: 0, ease: "easeeaseNoneLinear" }));
-				timelineSplitRed.append(_gsap2.default.to(this.rgpSplit.red, speed, { x: 1, y: 1, ease: "easeNoneLinear" }));
-				timelineSplitGreen.append(_gsap2.default.to(this.rgpSplit.green, speed, { x: -1, y: -1, ease: "easeNoneLinear" }));
-				timelineSplitBlue.append(_gsap2.default.to(this.rgpSplit.blue, speed, { x: 1, y: -1, ease: "easeNoneLinear" }));
-			}
-		}]);
-	
-		return EffectLayer;
-	}(_pixi2.default.Container);
-	
-	exports.default = EffectLayer;
 
 /***/ }
 /******/ ]);
