@@ -62,7 +62,7 @@ export default class EffectLayer extends PIXI.Container{
 		let timelineSplitRed = new TimelineLite();
 		let timelineSplitGreen = new TimelineLite();
 		let timelineSplitBlue = new TimelineLite();
-		let positionForce = (force * 30);
+		let positionForce = (force * 50);
 		let spliterForce = (force * 20);
 		let speed = time / steps;
 		for (var i = 4; i >= 0; i--) {

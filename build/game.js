@@ -30126,7 +30126,7 @@
 				var timelineSplitRed = new TimelineLite();
 				var timelineSplitGreen = new TimelineLite();
 				var timelineSplitBlue = new TimelineLite();
-				var positionForce = force * 30;
+				var positionForce = force * 50;
 				var spliterForce = force * 20;
 				var speed = time / steps;
 				for (var i = 4; i >= 0; i--) {
