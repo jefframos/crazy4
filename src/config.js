@@ -1,12 +1,15 @@
 export default {
-  width: 350,
-  height: 600,
+  width: 800,
+  height: 450,
+  bounds: {x:60, y:50},
+  hitCorrection:{x:30,y:50},  
   buttonRadius: 30,
+  debugAlpha: 0,
   webgl: true, //false for 2dContext, true for autoDetectRenderer
   rendererOptions: {
     //pixi rendererOptions
     antialias: true,
-    backgroundColor : 0x1099bb
+    backgroundColor : 0x000000
   },
   palette: {  	
     colors80:[
@@ -16,6 +19,7 @@ export default {
 	    0xFD1999 //pink
     ],
     initScreen80:0xA10EEC,
-    gameScreen80: 0xFFF001
+    gameScreen80: 0xFFF001,
+    effectsLayer:null,
   },  
 };

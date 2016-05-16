@@ -23,5 +23,27 @@ export default {
   },
   setInitScreen80(color){
   	config.palette.initScreen80 = color;
+  },
+  applyPositionCorrection(element){
+  	element.position.x += config.hitCorrection.x;
+  	element.position.y += config.hitCorrection.y;
+  },
+  addToContainer(element){
+  	let elementContainer = new PIXI.Container()
+  	elementContainer.addChild(element);
+  	return elementContainer;
+  },
+  centerPivot(element){
+  	element.pivot.x = element.width / 2;
+  	element.pivot.y = element.height / 2;
+  	element.position.x += element.width / 2;
+  	element.position.y += element.height / 2;
+  },
+  addMockObject(element){
+  	let alphaBG2 = new PIXI.Graphics()
+    alphaBG2.beginFill(0);	    
+    alphaBG2.drawRect(-element.width/2,-element.height/2,element.width,element.height );
+    alphaBG2.alpha = config.debugMockobjectsAlpha;
+    element.addChild( (alphaBG2) );
   }
 };

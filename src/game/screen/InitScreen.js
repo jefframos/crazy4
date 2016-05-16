@@ -21,28 +21,39 @@ export default class InitScreen extends Screen{
 
 		this.logo = new PIXI.Sprite(PIXI.Texture.fromImage('./assets/logo.png'));
 		this.addChild(this.logo);
+
 		this.logo.anchor.set(0.5,1);
 		this.logo.position.set(config.width/2, config.height/2);
+		utils.applyPositionCorrection(this.logo);
 		this.logoTimer = 0;
 		this.sinAcum = 0;
 		this.logoVelocity = 1;
+		this.logo.interactive = true
+	    this.logo.buttonMode = true
+	    this.logo.on('tap', this.onLogoClick.bind(this))
+	    	.on('click', this.onLogoClick.bind(this));
 
-		let rgbSplitterFilter = new PIXI.filters.RGBSplitFilter();
-		let filterCollection = [rgbSplitterFilter];
-
-		this.filtersToApply = filterCollection;
-
-	    this.screenContainer = new PIXI.Container();
+		this.screenContainer = new PIXI.Container();
 		this.addChild(this.screenContainer);
 
+		this.description = new PIXI.Text('by Jeff Ramos',{font : '24px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+	    this.screenContainer.addChild(this.description);
+	    this.description.position.set(config.width - this.description.width - config.bounds.x,config.height - config.bounds.y - 10);
+
+	    this.descriptionLogo = new PIXI.Text('click on logo',{font : '24px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+	    this.screenContainer.addChild(this.descriptionLogo);
+	    this.descriptionLogo.position.set(config.width/2 - this.description.width/2,config.height / 2 - this.description.height/2 + 50);
+
 		this.playButton = this.createButton();
-	    this.addChild(this.playButton)
 	    this.addChild(this.screenContainer)
+	    this.screenContainer.addChild(this.playButton)
 
 	    this.playButton.position.set(config.width / 2, config.height / 1.5  + config.buttonRadius)
+	    utils.centerPivot(this.playButton);
 	    TweenLite.from(this.playButton.scale, 1, {delay:0.5, x:0,y:0, ease:"easeOutElastic"});
 	    this.playButton.on('tap', this.onButtonDown.bind(this))
 	    	.on('click', this.onButtonDown.bind(this));
+
 	}
 	onButtonDown(test) {
 		TweenLite.killTweensOf(this.logo);
@@ -51,12 +62,14 @@ export default class InitScreen extends Screen{
 		this.buttonShape.tint = this.targetColor;
 		this.logoTimer = 10;
 		this.playButton.interactive = false;
-		TweenLite.to(this.buttonShape.scale, 1, {x:50, onComplete: this.toGame, onCompleteScope: this});
-		TweenLite.to(this.buttonShape.scale, 1, {y:30});
+		TweenLite.to(this.buttonShape.scale, 0.5, {x:25, y:25, onComplete: this.toGame, onCompleteScope: this});
 	}
 	toGame(){
 		utils.setGameScreen80(this.targetColor);
 		this.screenManager.change("GAME");
+	}
+	onLogoClick(){
+		config.effectsLayer.shake(1,20,1.5);
 	}
 	update(delta){
 		super.update(delta);
@@ -77,18 +90,23 @@ export default class InitScreen extends Screen{
 	    let button = new PIXI.Container()
 	    this.buttonShape = new PIXI.Graphics()
 	    let color = 0xFFFFFF;
-	    
+	   
 	   	let alphaBG = new PIXI.Graphics()
 	    alphaBG.beginFill(0);	    
 	    alphaBG.drawCircle( -10, 10, config.buttonRadius );
 	    alphaBG.alpha = 0.15;
-	    button.addChild( alphaBG )
+	    utils.applyPositionCorrection(button.addChild( utils.addToContainer(alphaBG) ));
 
 	    this.buttonShape.beginFill(color);	    
 	    this.buttonShape.drawCircle( 0, 0, config.buttonRadius );
-	    button.addChild( this.buttonShape )
+	    utils.applyPositionCorrection((button.addChild( this.buttonShape)));
+	    //utils.applyPositionCorrection();
 	    button.interactive = true
 	    button.buttonMode = true
+
+	    utils.addMockObject(button);
+
+	    console.log(button);
 	    return button
 	}
 }

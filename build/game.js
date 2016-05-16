@@ -29804,6 +29804,10 @@
 	
 	var _Bunny2 = _interopRequireDefault(_Bunny);
 	
+	var _EffectLayer = __webpack_require__(150);
+	
+	var _EffectLayer2 = _interopRequireDefault(_EffectLayer);
+	
 	var _GameScreen = __webpack_require__(143);
 	
 	var _GameScreen2 = _interopRequireDefault(_GameScreen);
@@ -29818,21 +29822,27 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var game = new _Game2.default(_config2.default);
+	PIXI.loader.add('./assets/frontTVDisplacement.jpg').add('./assets/glitch1.jpg').add('./assets/frontTVSoft.png').add('./assets/logo.png').add('./assets/fonts/super_smash_tv-webfont.woff').add('./assets/fonts/super_smash_tv-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
 	
-	var screenManager = new _ScreenManager2.default();
-	var gameScreen = new _GameScreen2.default("GAME");
-	var initScreen = new _InitScreen2.default("INIT");
+	function configGame() {
+		var game = new _Game2.default(_config2.default);
 	
-	screenManager.addScreen(gameScreen);
-	screenManager.addScreen(initScreen);
-	screenManager.forceChange("INIT");
-	//Add the bunny
-	//bunny.position.set(200,150);
-	//game.stage.addChild(bunny);
-	game.stage.addChild(screenManager);
+		var screenManager = new _ScreenManager2.default();
+		var gameScreen = new _GameScreen2.default("GAME");
+		var initScreen = new _InitScreen2.default("INIT");
 	
-	game.start();
+		screenManager.addScreen(gameScreen);
+		screenManager.addScreen(initScreen);
+		screenManager.forceChange("INIT");
+	
+		var effectLayer = new _EffectLayer2.default(screenManager);
+		game.stage.addChild(screenManager);
+		game.stage.addChild(effectLayer);
+	
+		_config2.default.effectsLayer = effectLayer;
+	
+		game.start();
+	}
 
 /***/ },
 /* 138 */
@@ -29876,14 +29886,17 @@
 	  value: true
 	});
 	exports.default = {
-	  width: 350,
-	  height: 600,
+	  width: 800,
+	  height: 450,
+	  bounds: { x: 60, y: 50 },
+	  hitCorrection: { x: 30, y: 50 },
 	  buttonRadius: 30,
+	  debugAlpha: 0,
 	  webgl: true, //false for 2dContext, true for autoDetectRenderer
 	  rendererOptions: {
 	    //pixi rendererOptions
 	    antialias: true,
-	    backgroundColor: 0x1099bb
+	    backgroundColor: 0x000000
 	  },
 	  palette: {
 	    colors80: [0xFFF001, //yellow
@@ -29892,7 +29905,8 @@
 	    0xFD1999 //pink
 	    ],
 	    initScreen80: 0xA10EEC,
-	    gameScreen80: 0xFFF001
+	    gameScreen80: 0xFFF001,
+	    effectsLayer: null
 	  }
 	};
 
@@ -30048,10 +30062,6 @@
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
-	var _Bunny = __webpack_require__(142);
-	
-	var _Bunny2 = _interopRequireDefault(_Bunny);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30083,10 +30093,15 @@
 				this.addChild(this.screenContainer);
 	
 				this.backButton = this.createButton();
-				this.addChild(this.backButton);
 				this.addChild(this.screenContainer);
 	
-				this.backButton.position.set(_config2.default.buttonRadius, _config2.default.buttonRadius);
+				this.description = new _pixi2.default.Text('The game will be here!', { font: '36px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.screenContainer.addChild(this.description);
+				this.description.position.set(_config2.default.width / 2 - this.description.width / 2, _config2.default.height / 2 - this.description.height / 2);
+	
+				this.screenContainer.addChild(this.backButton);
+	
+				this.backButton.position.set(_config2.default.buttonRadius + _config2.default.bounds.x, _config2.default.buttonRadius + _config2.default.bounds.y);
 				_gsap2.default.from(this.backButton.scale, 1, { x: 0, y: 0, ease: "easeOutElastic" });
 				this.backButton.on('tap', this.onButtonDown.bind(this)).on('click', this.onButtonDown.bind(this));
 			}
@@ -30094,8 +30109,8 @@
 			key: 'onButtonDown',
 			value: function onButtonDown(test) {
 				this.backButton.interactive = false;
-				_gsap2.default.to(this.backButton.scale, 0.8, { x: 50, onComplete: this.toGame, onCompleteScope: this });
-				_gsap2.default.to(this.backButton.scale, 1, { y: 50 });
+				_gsap2.default.to(this.buttonShape.scale, 0.8, { x: 50, onComplete: this.toGame, onCompleteScope: this });
+				_gsap2.default.to(this.buttonShape.scale, 1, { y: 50 });
 			}
 		}, {
 			key: 'toGame',
@@ -30111,14 +30126,25 @@
 			key: 'createButton',
 			value: function createButton() {
 				var button = new _pixi2.default.Container();
-				var bg = new _pixi2.default.Graphics();
+				this.buttonShape = new _pixi2.default.Graphics();
 				var color = _utils2.default.getRandomValue(_config2.default.palette.colors80, [_config2.default.palette.gameScreen80]);
-				bg.beginFill(color);
-				_utils2.default.setInitScreen80(color);
-				bg.drawCircle(0, 0, _config2.default.buttonRadius);
-				button.addChild(bg);
+	
+				var alphaBG = new _pixi2.default.Graphics();
+				alphaBG.beginFill(0);
+				alphaBG.drawCircle(-10, 10, _config2.default.buttonRadius);
+				alphaBG.alpha = 0.15;
+				_utils2.default.applyPositionCorrection(button.addChild(_utils2.default.addToContainer(alphaBG)));
+	
+				this.buttonShape.beginFill(color);
+				this.buttonShape.drawCircle(0, 0, _config2.default.buttonRadius);
+				_utils2.default.applyPositionCorrection(button.addChild(this.buttonShape));
+				//utils.applyPositionCorrection();
 				button.interactive = true;
 				button.buttonMode = true;
+	
+				_utils2.default.addMockObject(button);
+	
+				console.log(button);
 				return button;
 			}
 		}]);
@@ -37827,6 +37853,28 @@
 	  },
 	  setInitScreen80: function setInitScreen80(color) {
 	    _config2.default.palette.initScreen80 = color;
+	  },
+	  applyPositionCorrection: function applyPositionCorrection(element) {
+	    element.position.x += _config2.default.hitCorrection.x;
+	    element.position.y += _config2.default.hitCorrection.y;
+	  },
+	  addToContainer: function addToContainer(element) {
+	    var elementContainer = new PIXI.Container();
+	    elementContainer.addChild(element);
+	    return elementContainer;
+	  },
+	  centerPivot: function centerPivot(element) {
+	    element.pivot.x = element.width / 2;
+	    element.pivot.y = element.height / 2;
+	    element.position.x += element.width / 2;
+	    element.position.y += element.height / 2;
+	  },
+	  addMockObject: function addMockObject(element) {
+	    var alphaBG2 = new PIXI.Graphics();
+	    alphaBG2.beginFill(0);
+	    alphaBG2.drawRect(-element.width / 2, -element.height / 2, element.width, element.height);
+	    alphaBG2.alpha = _config2.default.debugMockobjectsAlpha;
+	    element.addChild(alphaBG2);
 	  }
 	};
 
@@ -38031,25 +38079,34 @@
 	
 				this.logo = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/logo.png'));
 				this.addChild(this.logo);
+	
 				this.logo.anchor.set(0.5, 1);
 				this.logo.position.set(_config2.default.width / 2, _config2.default.height / 2);
+				_utils2.default.applyPositionCorrection(this.logo);
 				this.logoTimer = 0;
 				this.sinAcum = 0;
 				this.logoVelocity = 1;
-	
-				var rgbSplitterFilter = new _pixi2.default.filters.RGBSplitFilter();
-				var filterCollection = [rgbSplitterFilter];
-	
-				this.filtersToApply = filterCollection;
+				this.logo.interactive = true;
+				this.logo.buttonMode = true;
+				this.logo.on('tap', this.onLogoClick.bind(this)).on('click', this.onLogoClick.bind(this));
 	
 				this.screenContainer = new _pixi2.default.Container();
 				this.addChild(this.screenContainer);
 	
+				this.description = new _pixi2.default.Text('by Jeff Ramos', { font: '24px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.screenContainer.addChild(this.description);
+				this.description.position.set(_config2.default.width - this.description.width - _config2.default.bounds.x, _config2.default.height - _config2.default.bounds.y - 10);
+	
+				this.descriptionLogo = new _pixi2.default.Text('click on logo', { font: '24px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.screenContainer.addChild(this.descriptionLogo);
+				this.descriptionLogo.position.set(_config2.default.width / 2 - this.description.width / 2, _config2.default.height / 2 - this.description.height / 2 + 50);
+	
 				this.playButton = this.createButton();
-				this.addChild(this.playButton);
 				this.addChild(this.screenContainer);
+				this.screenContainer.addChild(this.playButton);
 	
 				this.playButton.position.set(_config2.default.width / 2, _config2.default.height / 1.5 + _config2.default.buttonRadius);
+				_utils2.default.centerPivot(this.playButton);
 				_gsap2.default.from(this.playButton.scale, 1, { delay: 0.5, x: 0, y: 0, ease: "easeOutElastic" });
 				this.playButton.on('tap', this.onButtonDown.bind(this)).on('click', this.onButtonDown.bind(this));
 			}
@@ -38062,14 +38119,18 @@
 				this.buttonShape.tint = this.targetColor;
 				this.logoTimer = 10;
 				this.playButton.interactive = false;
-				_gsap2.default.to(this.buttonShape.scale, 1, { x: 50, onComplete: this.toGame, onCompleteScope: this });
-				_gsap2.default.to(this.buttonShape.scale, 1, { y: 30 });
+				_gsap2.default.to(this.buttonShape.scale, 0.5, { x: 25, y: 25, onComplete: this.toGame, onCompleteScope: this });
 			}
 		}, {
 			key: 'toGame',
 			value: function toGame() {
 				_utils2.default.setGameScreen80(this.targetColor);
 				this.screenManager.change("GAME");
+			}
+		}, {
+			key: 'onLogoClick',
+			value: function onLogoClick() {
+				_config2.default.effectsLayer.shake(1, 20, 1.5);
 			}
 		}, {
 			key: 'update',
@@ -38098,13 +38159,18 @@
 				alphaBG.beginFill(0);
 				alphaBG.drawCircle(-10, 10, _config2.default.buttonRadius);
 				alphaBG.alpha = 0.15;
-				button.addChild(alphaBG);
+				_utils2.default.applyPositionCorrection(button.addChild(_utils2.default.addToContainer(alphaBG)));
 	
 				this.buttonShape.beginFill(color);
 				this.buttonShape.drawCircle(0, 0, _config2.default.buttonRadius);
-				button.addChild(this.buttonShape);
+				_utils2.default.applyPositionCorrection(button.addChild(this.buttonShape));
+				//utils.applyPositionCorrection();
 				button.interactive = true;
 				button.buttonMode = true;
+	
+				_utils2.default.addMockObject(button);
+	
+				console.log(button);
 				return button;
 			}
 		}]);
@@ -38209,6 +38275,126 @@
 	}(_pixi2.default.Container);
 	
 	exports.default = ScreenManager;
+
+/***/ },
+/* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _config = __webpack_require__(140);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _gsap = __webpack_require__(144);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var EffectLayer = function (_PIXI$Container) {
+		_inherits(EffectLayer, _PIXI$Container);
+	
+		function EffectLayer(screenManager) {
+			_classCallCheck(this, EffectLayer);
+	
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EffectLayer).call(this));
+	
+			_this.screenManager = screenManager;
+	
+			_this.tvLines = new _pixi2.default.extras.TilingSprite(_pixi2.default.Texture.fromImage('./assets/tvlines.png', _config2.default.width, _config2.default.height));
+			_this.addChild(_this.tvLines);
+			_this.tvLines.width = _config2.default.width;
+			_this.tvLines.height = _config2.default.height;
+	
+			_this.tvLines.blendMode = _pixi2.default.BLEND_MODES.ADD;
+	
+			_this.tvShape = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVsoft.png'));
+			_this.addChild(_this.tvShape);
+	
+			_this.tvShape.blendMode = _pixi2.default.BLEND_MODES.OVERLAY;
+	
+			_this.rgpSplit = new _pixi2.default.filters.RGBSplitFilter();
+			_this.rgpSplit.red = new _pixi2.default.Point(1, 1);
+			_this.rgpSplit.green = new _pixi2.default.Point(-1, -1);
+			_this.rgpSplit.blue = new _pixi2.default.Point(1, -1);
+			_this.rgpSplit.padding = 5;
+			var displacementTexture = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVDisplacement.jpg'));
+			_this.addChild(displacementTexture);
+			_this.displacementFilter = new _pixi2.default.filters.DisplacementFilter(displacementTexture);
+			displacementTexture.anchor.set(0.5, 0.5);
+			displacementTexture.position.set(_config2.default.width / 2, _config2.default.height / 2);
+	
+			_this.glitch1 = new _pixi2.default.extras.TilingSprite(_pixi2.default.Texture.fromImage('./assets/glitch1.jpg', 200, 200));
+			//this.addChild(this.glitch1)
+			_this.glitch1.width = 200;
+			_this.glitch1.height = _config2.default.height;
+			_this.displacementFilterGlitch1 = new _pixi2.default.filters.DisplacementFilter(_this.glitch1);
+	
+			_this.screenManager.filters = [_this.rgpSplit, _this.displacementFilter, _this.displacementFilterGlitch1];
+	
+			return _this;
+		}
+	
+		_createClass(EffectLayer, [{
+			key: 'update',
+			value: function update(delta) {
+	
+				this.tvLines.tilePosition.y += 1;
+			}
+		}, {
+			key: 'shake',
+			value: function shake(force, steps, time) {
+				if (!force) {
+					force = 1;
+				}
+				if (!steps) {
+					steps = 4;
+				}
+				if (!time) {
+					time = 1;
+				}
+				var timelinePosition = new TimelineLite();
+				var timelineSplitRed = new TimelineLite();
+				var timelineSplitGreen = new TimelineLite();
+				var timelineSplitBlue = new TimelineLite();
+				var positionForce = force * 30;
+				var spliterForce = force * 20;
+				var speed = time / steps;
+				for (var i = 4; i >= 0; i--) {
+					timelinePosition.append(_gsap2.default.to(this.screenManager.position, speed, { x: Math.random() * positionForce - positionForce / 2, y: Math.random() * positionForce - positionForce / 2, ease: "easeNoneLinear" }));
+					timelineSplitRed.append(_gsap2.default.to(this.rgpSplit.red, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
+					timelineSplitGreen.append(_gsap2.default.to(this.rgpSplit.green, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
+					timelineSplitBlue.append(_gsap2.default.to(this.rgpSplit.blue, speed, { x: Math.random() * spliterForce - spliterForce / 2, y: Math.random() * spliterForce - spliterForce / 2, ease: "easeNoneLinear" }));
+				};
+	
+				timelinePosition.append(_gsap2.default.to(this.screenManager.position, speed, { x: 0, y: 0, ease: "easeeaseNoneLinear" }));
+				timelineSplitRed.append(_gsap2.default.to(this.rgpSplit.red, speed, { x: 1, y: 1, ease: "easeNoneLinear" }));
+				timelineSplitGreen.append(_gsap2.default.to(this.rgpSplit.green, speed, { x: -1, y: -1, ease: "easeNoneLinear" }));
+				timelineSplitBlue.append(_gsap2.default.to(this.rgpSplit.blue, speed, { x: 1, y: -1, ease: "easeNoneLinear" }));
+			}
+		}]);
+	
+		return EffectLayer;
+	}(_pixi2.default.Container);
+	
+	exports.default = EffectLayer;
 
 /***/ }
 /******/ ]);
