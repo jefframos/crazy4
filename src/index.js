@@ -20,6 +20,12 @@ PIXI.loader
 	.load(configGame);
 
 function configGame(){
+
+	var type = window.location.hash.substr(1);
+	if(type == "NOJUICY"){
+		config.isJuicy = 0;
+	}
+
 	let game = new Game(config);
 
 
@@ -30,12 +36,13 @@ function configGame(){
 	screenManager.addScreen(gameScreen);
 	screenManager.addScreen(initScreen);
 	screenManager.forceChange("INIT");
-
 	
 
 	let effectLayer = new EffectLayer(screenManager);
 	game.stage.addChild(screenManager);
-	game.stage.addChild(effectLayer);
+	if(!config.isJuicy == 0){
+		game.stage.addChild(effectLayer);
+    }
 
 	config.effectsLayer = effectLayer;
 

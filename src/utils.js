@@ -25,6 +25,9 @@ export default {
   	config.palette.initScreen80 = color;
   },
   applyPositionCorrection(element){
+    if(config.isJuicy == 0){
+      return;
+    }
   	element.position.x += config.hitCorrection.x;
   	element.position.y += config.hitCorrection.y;
   },
@@ -40,6 +43,9 @@ export default {
   	element.position.y += element.height / 2;
   },
   addMockObject(element){
+    if(config.isJuicy == 0){
+      return;
+    }
   	let alphaBG2 = new PIXI.Graphics()
     alphaBG2.beginFill(0);	    
     alphaBG2.drawRect(-element.width/2,-element.height/2,element.width,element.height );

@@ -5,6 +5,7 @@ export default {
   hitCorrection:{x:30,y:50},  
   buttonRadius: 30,
   debugAlpha: 0,
+  isJuicy: 1,
   webgl: true, //false for 2dContext, true for autoDetectRenderer
   rendererOptions: {
     //pixi rendererOptions
@@ -21,5 +22,5 @@ export default {
     initScreen80:0xA10EEC,
     gameScreen80: 0xFFF001,
     effectsLayer:null,
-  },  
+  },
 };

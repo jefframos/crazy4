@@ -3,6 +3,7 @@ import PIXI from 'pixi.js';
 export default class Game {
 	constructor(config){
 		const Renderer = (config.webgl) ? PIXI.autoDetectRenderer : PIXI.CanvasRenderer;
+		let ratio = config.width / config.height;		
 		this.renderer = new Renderer(config.width || 800, config.height || 600, config.rendererOptions);
 		document.body.appendChild(this.renderer.view);
 

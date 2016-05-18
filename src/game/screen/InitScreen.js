@@ -3,7 +3,6 @@ import TweenLite from 'gsap';
 import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
-import Bunny from '../../Bunny';
 
 export default class InitScreen extends Screen{
 	screenContainer;
@@ -13,6 +12,7 @@ export default class InitScreen extends Screen{
 		super(label);
 	}
 	build(){
+		console.log("BUILD");
 		super.build();
 		this.background = new PIXI.Graphics();
 		this.background.beginFill(config.palette.initScreen80);
@@ -40,7 +40,7 @@ export default class InitScreen extends Screen{
 	    this.screenContainer.addChild(this.description);
 	    this.description.position.set(config.width - this.description.width - config.bounds.x,config.height - config.bounds.y - 10);
 
-	    this.descriptionLogo = new PIXI.Text('click on logo',{font : '24px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+	    this.descriptionLogo = new PIXI.Text('SHAKE IT!',{font : '24px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
 	    this.screenContainer.addChild(this.descriptionLogo);
 	    this.descriptionLogo.position.set(config.width/2 - this.description.width/2,config.height / 2 - this.description.height/2 + 50);
 
@@ -51,32 +51,40 @@ export default class InitScreen extends Screen{
 	    this.playButton.position.set(config.width / 2, config.height / 1.5  + config.buttonRadius)
 	    utils.centerPivot(this.playButton);
 	    TweenLite.from(this.playButton.scale, 1, {delay:0.5, x:0,y:0, ease:"easeOutElastic"});
-	    this.playButton.on('tap', this.onButtonDown.bind(this))
-	    	.on('click', this.onButtonDown.bind(this));
+	    this.playButton.on('tap', this.onPlayButtonClick.bind(this))
+	    	.on('click', this.onPlayButtonClick.bind(this));
 
 	}
-	onButtonDown(test) {
+	onPlayButtonClick() {
+		config.effectsLayer.addShockwave(this.playButton.position.x / config.width,this.playButton.position.y / config.height,0.8);
+		config.effectsLayer.fadeBloom(100,0,0.5,0, true);
 		TweenLite.killTweensOf(this.logo);
 		TweenLite.killTweensOf(this.buttonShape, true);
 		this.logo.tint = this.targetColor;
 		this.buttonShape.tint = this.targetColor;
 		this.logoTimer = 10;
 		this.playButton.interactive = false;
-		TweenLite.to(this.buttonShape.scale, 0.5, {x:25, y:25, onComplete: this.toGame, onCompleteScope: this});
+		TweenLite.to(this.buttonShape.scale, 0.5, {delay:0.2, x:25, y:25, onComplete: this.toGame, onCompleteScope: this});
 	}
-	toGame(){
+	toGame(){		
 		utils.setGameScreen80(this.targetColor);
 		this.screenManager.change("GAME");
 	}
 	onLogoClick(){
-		config.effectsLayer.shake(1,20,1.5);
+		config.effectsLayer.shake(1,15,1);
+		config.effectsLayer.addShockwave(0.5,0.5,0.8);
+		config.effectsLayer.shakeSplitter(1,10,1.8);
+		config.effectsLayer.fadeBloom(100,0,0.5,0, true);
 	}
 	update(delta){
 		super.update(delta);
-
+		if(config.isJuicy == 0){
+			this.targetColor = utils.getRandomValue(config.palette.colors80, [this.logo.tint,config.palette.initScreen80]);
+			return;
+		}
 		this.logo.position.y += this.logoVelocity;
 		this.logoVelocity = Math.sin(this.sinAcum+=0.3);
-		if(this.logoTimer <= 0){
+		if(this.logoTimer <= 0){			
 			this.targetColor = utils.getRandomValue(config.palette.colors80, [this.logo.tint,config.palette.initScreen80]);
 			TweenLite.to(this.logo, 0.8, {tint:this.targetColor});
 			TweenLite.to(this.buttonShape, 0.8, {tint:this.targetColor});
