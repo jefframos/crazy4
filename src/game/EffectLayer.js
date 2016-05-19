@@ -32,7 +32,6 @@ export default class EffectLayer extends PIXI.Container{
 		this.rgpSplit.red = new PIXI.Point(1,1);
 		this.rgpSplit.green = new PIXI.Point(-1,-1);
 		this.rgpSplit.blue = new PIXI.Point(1,-1);
-		this.rgpSplit.padding = 5;
 
 		//DISPLACEMENT FILTER
 		let displacementTexture = new PIXI.Sprite(PIXI.Texture.fromImage('./assets/frontTVDisplacement.jpg'))

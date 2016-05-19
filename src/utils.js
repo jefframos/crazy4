@@ -49,6 +49,8 @@ export default {
   	let alphaBG2 = new PIXI.Graphics()
     alphaBG2.beginFill(0);	    
     alphaBG2.drawRect(-element.width/2,-element.height/2,element.width,element.height );
+    alphaBG2.position.x -= config.hitCorrection.x;
+    alphaBG2.position.y -= config.hitCorrection.y;
     alphaBG2.alpha = config.debugMockobjectsAlpha;
     element.addChild( (alphaBG2) );
   }

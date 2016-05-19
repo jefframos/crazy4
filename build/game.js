@@ -29822,7 +29822,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	PIXI.loader.add('./assets/frontTVDisplacement.jpg').add('./assets/glitch1.jpg').add('./assets/frontTVSoft.png').add('./assets/logo.png').add('./assets/fonts/super_smash_tv-webfont.woff').add('./assets/fonts/super_smash_tv-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
+	PIXI.loader.add('./assets/frontTVDisplacement.jpg').add('./assets/glitch1.jpg').add('./assets/frontTVSoft.png').add('./assets/logo.png').add('./assets/inGameBg1.png').add('./assets/fonts/super_smash_tv-webfont.woff').add('./assets/fonts/super_smash_tv-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
 	
 	function configGame() {
 	
@@ -29897,7 +29897,7 @@
 	  width: 800,
 	  height: 450,
 	  bounds: { x: 60, y: 50 },
-	  hitCorrection: { x: 30, y: 50 },
+	  hitCorrection: { x: 20, y: 50 },
 	  buttonRadius: 30,
 	  debugAlpha: 0,
 	  isJuicy: 1,
@@ -29908,13 +29908,14 @@
 	    backgroundColor: 0x000000
 	  },
 	  palette: {
-	    colors80: [0xFFF001, //yellow
-	    0x99FC20, //green
-	    0x00E6FE, //light blue
-	    0xFD1999 //pink
+	    colors80: [
+	    // 0xFFF001, //yellow
+	    0x2A0E79, //green
+	    0x44A6C6, //light blue
+	    0xDB1993 //pink
 	    ],
-	    initScreen80: 0xA10EEC,
-	    gameScreen80: 0xFFF001,
+	    initScreen80: 0xDB1993,
+	    gameScreen80: 0xDB1993,
 	    effectsLayer: null
 	  }
 	};
@@ -30103,7 +30104,6 @@
 			_this.rgpSplit.red = new _pixi2.default.Point(1, 1);
 			_this.rgpSplit.green = new _pixi2.default.Point(-1, -1);
 			_this.rgpSplit.blue = new _pixi2.default.Point(1, -1);
-			_this.rgpSplit.padding = 5;
 	
 			//DISPLACEMENT FILTER
 			var displacementTexture = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/frontTVDisplacement.jpg'));
@@ -37950,6 +37950,10 @@
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
+	var _Line = __webpack_require__(151);
+	
+	var _Line2 = _interopRequireDefault(_Line);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -37973,9 +37977,18 @@
 				_get(Object.getPrototypeOf(GameScreen.prototype), 'build', this).call(this);
 	
 				this.background = new _pixi2.default.Graphics();
-				this.background.beginFill(_config2.default.palette.gameScreen80);
+				this.background.beginFill(0);
 				this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
 				this.addChild(this.background);
+	
+				this.backgroundContainer = new _pixi2.default.Container();
+				this.addChild(this.backgroundContainer);
+				this.inGameBg1 = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/inGameBg1.png'));
+				this.backgroundContainer.addChild(this.inGameBg1);
+				this.inGameBg1.position.set(0, _config2.default.height - this.inGameBg1.height);
+	
+				this.lineCounter = 1;
+				this.lineRespawn = 0.3;
 	
 				this.screenContainer = new _pixi2.default.Container();
 				this.addChild(this.screenContainer);
@@ -37984,9 +37997,9 @@
 	
 				this.timerMax = 5;
 				this.timer = this.timerMax;
-				this.description = new _pixi2.default.Text('0', { font: '100px super_smash_tvregular', fill: 0xFFFFFF, align: 'right', dropShadow: true, dropShadowColor: '#666666' });
+				this.description = new _pixi2.default.Text('0', { font: '60px super_smash_tvregular', fill: 0xFFFFFF, align: 'right', dropShadow: true, dropShadowColor: '#666666' });
 				this.screenContainer.addChild(this.description);
-				this.description.position.set(_config2.default.width / 2 - this.description.width / 2, -30);
+				this.description.position.set(_config2.default.width / 2 - this.description.width / 2, 0);
 				_utils2.default.applyPositionCorrection(this.description);
 	
 				this.gameContainer = new _pixi2.default.Container();
@@ -37997,41 +38010,217 @@
 	
 				this.gameMatrix = [];
 				this.entityMatrix = [];
-				this.configGameMatrix(5, 9);
-				this.drawMatrix();
+				this.matrixBounds = { i: 5, j: 11 };
+				this.configGameMatrix(this.matrixBounds.i, this.matrixBounds.j);
+				this.dotRadious = 15;
+				this.dotDistance = 20;
+				this.drawMatrix(this.dotRadious, this.dotDistance * 2);
+	
+				this.gameContainer.pivot.x = this.gameContainer.width / 2;
+				this.gameContainer.pivot.y = this.gameContainer.height / 2;
+				this.gameContainer.position.x += this.gameContainer.pivot.x;
+				this.gameContainer.position.y += this.gameContainer.pivot.y + 30;
+				this.gameContainer.visible = false;
+	
+				var gameContainerBackground = new _pixi2.default.Graphics();
+				gameContainerBackground.beginFill(0);
+				gameContainerBackground.drawRect(-50, -50, this.gameContainer.width, this.gameContainer.height);
+				gameContainerBackground.alpha = 0;
+				this.gameContainer.addChild(gameContainerBackground);
 	
 				this.glichValue = 1;
 	
+				this.interactive = true;
+				this.gameContainer.interactive = true;
+				// this.gameContainer.buttonMode = true;
+				this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
+	
+				this.on('tap', this.onGameClickCallback.bind(this)).on('click', this.onGameClickCallback.bind(this));
+				_utils2.default.addMockObject(this.gameContainer);
+				this.startButton = this.createPlayButton();
+				_utils2.default.applyPositionCorrection(this.startButton);
+				this.screenContainer.addChild(this.startButton);
+				this.startButton.position.set(_config2.default.width / 2, _config2.default.height / 2);
+				_gsap2.default.from(this.startButton.position, 1, { delay: 0.5, y: _config2.default.height + this.startButton.height, ease: "easeOutBack" });
+				this.startButton.on('tap', this.initGame.bind(this)).on('click', this.initGame.bind(this));
+	
 				this.backButton = this.createButton();
 				this.screenContainer.addChild(this.backButton);
-	
 				this.backButton.position.set(_config2.default.buttonRadius + _config2.default.bounds.x, _config2.default.buttonRadius + _config2.default.bounds.y);
-				_gsap2.default.from(this.backButton.scale, 1, { x: 0, y: 0, ease: "easeOutElastic" });
+				_gsap2.default.from(this.backButton.scale, 0.8, { x: 20, y: 20 });
 				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
+	
+				// this.initGame();
 			}
+	
+			//EVENTS
+	
+		}, {
+			key: 'onMouseMoveCallback',
+			value: function onMouseMoveCallback(e) {
+				this.findCol(e.data.global.x - e.target.position.x + e.target.pivot.x + _config2.default.hitCorrection.x);
+			}
+		}, {
+			key: 'onGameClickCallback',
+			value: function onGameClickCallback() {
+				if (this.addElementOnColum(this.currentColum, 1)) {
+					this.resetTimer();
+					this.opponentPlay();
+				}
+			}
+	
+			//GAMEPLAY
+	
+		}, {
+			key: 'findCol',
+			value: function findCol(position) {
+				this.currentColum = Math.floor(position / (this.dotRadious + this.dotDistance));
+				this.showCol(this.currentColum);
+			}
+		}, {
+			key: 'updateColors',
+			value: function updateColors() {
+				for (var i = this.entityMatrix.length - 1; i >= 0; i--) {
+					for (var j = this.entityMatrix[i].length - 1; j >= 0; j--) {
+						if (this.gameMatrix[i][j] == 0) {
+							this.entityMatrix[i][j].tint = 0xFFFFFF;
+						} else if (this.gameMatrix[i][j] == 1) {
+							this.entityMatrix[i][j].tint = 0x00FFFF;
+						} else if (this.gameMatrix[i][j] == 2) {
+							this.entityMatrix[i][j].tint = 0xFFFF00;
+						}
+					}
+				}
+			}
+		}, {
+			key: 'showCol',
+			value: function showCol(colum) {
+				this.updateColors();
+				if (colum < 0 || colum >= this.entityMatrix.length) {
+					return;
+				}
+				for (var i = this.entityMatrix[colum].length - 1; i >= 0; i--) {
+					if (this.gameMatrix[colum][i] == 0) {
+						_gsap2.default.killTweensOf(this.entityMatrix[colum][i]);
+						this.entityMatrix[colum][i].tint = _config2.default.palette.gameScreen80;
+					}
+				};
+			}
+		}, {
+			key: 'addElementOnColum',
+			value: function addElementOnColum(colum, id) {
+				if (colum < 0 || colum >= this.gameMatrix.length) {
+					return false;
+				}
+				var added = false;
+				for (var i = this.gameMatrix[colum].length - 1; i >= 0; i--) {
+					if (this.gameMatrix[colum][i] == 0) {
+						this.gameMatrix[colum][i] = id;
+						added = true;
+						break;
+					}
+				};
+				this.updateColors();
+				this.verifyWinner();
+				return added;
+			}
+			//trabalhar nisso
+	
+		}, {
+			key: 'verifyWinner',
+			value: function verifyWinner() {
+				//horizontal verification
+				var currentTestedHorizontal = void 0;
+				var currentTestedVertical = void 0;
+				var acumHorizontal = void 0;
+				var acumVertical = void 0;
+				for (var i = 0; i < this.entityMatrix.length; i++) {
+					acumVertical = 0;
+	
+					currentTestedVertical = -1;
+					for (var j = 0; j < this.entityMatrix[i].length; j++) {
+						if (currentTestedVertical < 0) {
+							currentTestedVertical = this.entityMatrix[i][j];
+						}
+						if (currentTestedVertical == this.entityMatrix[i][j] && this.entityMatrix[i][j] > 0) {
+							acumVertical++;
+						} else {
+							currentTestedVertical = this.entityMatrix[i][j];
+							acumVertical = 1;
+						}
+					}
+					//console.log(acumVertical);
+				}
+			}
+		}, {
+			key: 'opponentPlay',
+			value: function opponentPlay() {
+				var rndPlay = Math.floor(Math.random() * this.gameMatrix.length);
+				this.addElementOnColum(rndPlay, 2);
+			}
+		}, {
+			key: 'initGame',
+			value: function initGame() {
+				this.started = true;
+				_gsap2.default.killTweensOf(this.startButton.position);
+				_gsap2.default.to(this.startButton.position, 0.4, { y: _config2.default.height + this.startButton.height, ease: "easeInBack" });
+				this.gameContainer.visible = true;
+				this.gameContainer.alpha = 0;
+				_gsap2.default.killTweensOf(this.gameContainer);
+				_gsap2.default.killTweensOf(this.gameContainer.scale);
+				_gsap2.default.from(this.gameContainer.scale, 1, { delay: 0.3, y: 0.1, x: 0.1, ease: "easeOutBack" });
+				_gsap2.default.to(this.gameContainer, 0.5, { delay: 0.3, alpha: 1 });
+				this.timer = this.timerMax * 2;
+			}
+		}, {
+			key: 'resetTimer',
+			value: function resetTimer() {
+				this.timer = this.timerMax;
+			}
+		}, {
+			key: 'endTimer',
+			value: function endTimer() {
+				this.opponentPlay();
+				_config2.default.effectsLayer.shake(1, 5, 0.5);
+				_config2.default.effectsLayer.addShockwave(0.5, 0.5, 0.5);
+				_config2.default.effectsLayer.shakeSplitter(1, 4, 0.4);
+				//config.effectsLayer.fadeBloom(100,0,0.3,0, true);
+			}
+		}, {
+			key: 'destroyGame',
+			value: function destroyGame() {
+				this.resetTimer();
+				this.started = false;
+			}
+	
+			//INITIALIZE
+	
 		}, {
 			key: 'configGameMatrix',
 			value: function configGameMatrix(i, j) {
 				var tempArray = [];
+				var tempArray2 = [];
 				for (var jj = 0; jj < j; jj++) {
 					tempArray = [];
+					tempArray2 = [];
 					for (var ii = 0; ii < i; ii++) {
 						tempArray.push(0);
+						tempArray2.push(0);
 					}
-					this.gameMatrix.push(tempArray);
+					this.gameMatrix.push(tempArray2);
 					this.entityMatrix.push(tempArray);
 				};
 			}
 		}, {
 			key: 'drawMatrix',
-			value: function drawMatrix() {
+			value: function drawMatrix(size, distance) {
 				for (var i = 0; i < this.gameMatrix.length; i++) {
 					for (var j = 0; j < this.gameMatrix[i].length; j++) {
 						var alphaBG = new _pixi2.default.Graphics();
 						alphaBG.beginFill(0xffffff);
-						alphaBG.drawCircle(0, 0, 20);
+						alphaBG.drawCircle(0, 0, size);
 						var container = _utils2.default.addToContainer(alphaBG);
-						container.position.set(i * 50, j * 50);
+						container.position.set(i * distance, j * distance);
 						this.gameContainer.addChild(container);
 						this.entityMatrix[i][j] = alphaBG;
 					}
@@ -38039,6 +38228,10 @@
 				this.gameContainer.position.set(_config2.default.width / 2 - this.gameContainer.width / 2, _config2.default.height / 2 - this.gameContainer.height / 2);
 				_utils2.default.applyPositionCorrection(this.gameContainer);
 			}
+			//
+	
+			//SCREEN
+	
 		}, {
 			key: 'onBackCallback',
 			value: function onBackCallback() {
@@ -38050,24 +38243,40 @@
 		}, {
 			key: 'toInit',
 			value: function toInit() {
+				this.destroyGame();
 				this.screenManager.change("INIT");
 			}
+	
+			//UPDATE
+	
 		}, {
 			key: 'update',
 			value: function update(delta) {
 				_get(Object.getPrototypeOf(GameScreen.prototype), 'update', this).call(this, delta);
-	
+				if (!this.started) {
+					return;
+				}
 				this.timer -= delta;
 				if (this.timer <= 0) {
-					this.timer = this.timerMax;
-					_config2.default.effectsLayer.shake(1, 15, 1);
-					_config2.default.effectsLayer.addShockwave(0.5, 0.5, 0.8);
-					_config2.default.effectsLayer.shakeSplitter(1, 10, 1.8);
-					_config2.default.effectsLayer.fadeBloom(100, 0, 0.3, 0, true);
+					this.resetTimer();
+					this.endTimer();
 				} else {
-					this.description.setText(this.timer.toFixed(3));
+					var rnd1 = String.fromCharCode(Math.floor(Math.random() * 20) + 65);
+					var rnd2 = Math.floor(Math.random() * 9);
+					var rnd3 = String.fromCharCode(Math.floor(Math.random() * 20) + 65);
+					this.description.setText(this.timer.toFixed(3) + rnd1 + rnd2 + rnd3);
+				}
+				this.lineCounter -= delta;
+				if (this.lineCounter <= 0) {
+					this.lineCounter = this.lineRespawn;
+					var line = new _Line2.default(4);
+					this.addChild(line);
+					line.position.y = this.inGameBg1.position.y;
+	
+					this.setChildIndex(this.screenContainer, this.children.length - 1);
 				}
 	
+				this.gameContainer.scale.y += this.gameContainerVelocity.x * 0.01;
 				this.gameContainer.position.x += this.gameContainerVelocity.x;
 				this.gameContainer.position.y += this.gameContainerVelocity.y;
 				this.gameContainerVelocity.x = Math.sin(this.gameContainerSinAcum += 0.04) * 0.1;
@@ -38079,6 +38288,9 @@
 					this.glichValue = Math.random() * 2;
 				}
 			}
+	
+			//EFFECTS
+	
 		}, {
 			key: 'randomBallGlitch',
 			value: function randomBallGlitch() {
@@ -38087,28 +38299,51 @@
 				}
 				var rndi = Math.floor(Math.random() * this.entityMatrix.length);
 				var rndj = Math.floor(Math.random() * this.entityMatrix[0].length);
+	
 				var tempColor = this.entityMatrix[rndi][rndj].tint;
 	
+				if (tempColor != 0xFFFFFF) {
+					return;
+				}
+	
 				this.entityMatrix[rndi][rndj].tint = _utils2.default.getRandomValue(_config2.default.palette.colors80);
+				_gsap2.default.killTweensOf(this.entityMatrix[rndi][rndj]);
 				_gsap2.default.to(this.entityMatrix[rndi][rndj], Math.random(), { tint: tempColor });
+			}
+	
+			//GRAPHICS
+	
+		}, {
+			key: 'createPlayButton',
+			value: function createPlayButton() {
+				var button = new _pixi2.default.Container();
+				var shape = new _pixi2.default.Graphics();
+				var color = 0xFFFFFF;
+				shape.beginFill(color);
+				shape.drawCircle(0, 0, _config2.default.buttonRadius);
+				//button.addChild(shape);
+				//utils.applyPositionCorrection((button.addChild( shape)));
+				button.addChild(shape);
+				//utils.applyPositionCorrection();
+				button.interactive = true;
+				button.buttonMode = true;
+	
+				_utils2.default.addMockObject(button);
+	
+				return button;
 			}
 		}, {
 			key: 'createButton',
 			value: function createButton() {
 				var button = new _pixi2.default.Container();
 				this.buttonShape = new _pixi2.default.Graphics();
-				var color = _utils2.default.getRandomValue(_config2.default.palette.colors80, [_config2.default.palette.gameScreen80]);
+				var color = _config2.default.palette.gameScreen80;
 				_config2.default.palette.initScreen80 = color;
-				var alphaBG = new _pixi2.default.Graphics();
-				alphaBG.beginFill(0);
-				alphaBG.drawCircle(-10, 10, _config2.default.buttonRadius);
-				alphaBG.alpha = 0.15;
-				_utils2.default.applyPositionCorrection(button.addChild(_utils2.default.addToContainer(alphaBG)));
 	
 				this.buttonShape.beginFill(color);
 				this.buttonShape.drawCircle(0, 0, _config2.default.buttonRadius);
-				_utils2.default.applyPositionCorrection(button.addChild(this.buttonShape));
-				//utils.applyPositionCorrection();
+				button.addChild(this.buttonShape);
+	
 				button.interactive = true;
 				button.buttonMode = true;
 	
@@ -38189,6 +38424,8 @@
 	    var alphaBG2 = new PIXI.Graphics();
 	    alphaBG2.beginFill(0);
 	    alphaBG2.drawRect(-element.width / 2, -element.height / 2, element.width, element.height);
+	    alphaBG2.position.x -= _config2.default.hitCorrection.x;
+	    alphaBG2.position.y -= _config2.default.hitCorrection.y;
 	    alphaBG2.alpha = _config2.default.debugMockobjectsAlpha;
 	    element.addChild(alphaBG2);
 	  }
@@ -38398,7 +38635,7 @@
 				_utils2.default.applyPositionCorrection(this.logo);
 				this.logoTimer = 0;
 				this.sinAcum = 0;
-				this.logoVelocity = 1;
+				this.logoVelocity = 2;
 				this.logo.interactive = true;
 				this.logo.buttonMode = true;
 				this.logo.on('tap', this.onLogoClick.bind(this)).on('click', this.onLogoClick.bind(this));
@@ -38420,7 +38657,7 @@
 	
 				this.playButton.position.set(_config2.default.width / 2, _config2.default.height / 1.5 + _config2.default.buttonRadius);
 				_utils2.default.centerPivot(this.playButton);
-				_gsap2.default.from(this.playButton.scale, 1, { delay: 0.5, x: 0, y: 0, ease: "easeOutElastic" });
+				_gsap2.default.from(this.buttonShape.scale, 0.5, { x: 15, y: 15 });
 				this.playButton.on('tap', this.onPlayButtonClick.bind(this)).on('click', this.onPlayButtonClick.bind(this));
 			}
 		}, {
@@ -38464,7 +38701,7 @@
 					this.targetColor = _utils2.default.getRandomValue(_config2.default.palette.colors80, [this.logo.tint, _config2.default.palette.initScreen80]);
 					_gsap2.default.to(this.logo, 0.8, { tint: this.targetColor });
 					_gsap2.default.to(this.buttonShape, 0.8, { tint: this.targetColor });
-					this.logoTimer = 1;
+					this.logoTimer = 2;
 				} else {
 					this.logoTimer -= delta;
 				}
@@ -38478,13 +38715,14 @@
 	
 				var alphaBG = new _pixi2.default.Graphics();
 				alphaBG.beginFill(0);
-				alphaBG.drawCircle(-10, 10, _config2.default.buttonRadius);
-				alphaBG.alpha = 0.15;
+				alphaBG.drawCircle(-5, -5, _config2.default.buttonRadius);
+				alphaBG.alpha = 0;
 				_utils2.default.applyPositionCorrection(button.addChild(_utils2.default.addToContainer(alphaBG)));
 	
 				this.buttonShape.beginFill(color);
 				this.buttonShape.drawCircle(0, 0, _config2.default.buttonRadius);
-				_utils2.default.applyPositionCorrection(button.addChild(this.buttonShape));
+				//utils.applyPositionCorrection((button.addChild( this.buttonShape)));
+				button.addChild(this.buttonShape);
 				//utils.applyPositionCorrection();
 				button.interactive = true;
 				button.buttonMode = true;
@@ -38583,11 +38821,6 @@
 			key: 'update',
 			value: function update(delta) {
 				if (this.screenList != null) {
-					// for(let i = 0; i < this.screenList.length; i++){
-					// 	if(this.screenList[i].update){
-					// 		this.screenList[i].update(delta);
-					// 	}
-					// }
 					this.currentScreen.update(delta);
 				}
 			}
@@ -38597,6 +38830,68 @@
 	}(_pixi2.default.Container);
 	
 	exports.default = ScreenManager;
+
+/***/ },
+/* 151 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _config = __webpack_require__(140);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _gsap = __webpack_require__(144);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Line = function (_PIXI$Container) {
+		_inherits(Line, _PIXI$Container);
+	
+		function Line(speed) {
+			_classCallCheck(this, Line);
+	
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Line).call(this));
+	
+			_this.speed = speed;
+			_this.line = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/line.png'));
+			_this.addChild(_this.line);
+			return _this;
+		}
+	
+		_createClass(Line, [{
+			key: 'update',
+			value: function update(delta) {
+				this.position.y += this.speed;
+	
+				if (this.position.y > _config2.default.height) {
+					this.kill = true;
+				}
+			}
+		}]);
+	
+		return Line;
+	}(_pixi2.default.Container);
+	
+	exports.default = Line;
 
 /***/ }
 /******/ ]);

@@ -2,7 +2,7 @@ export default {
   width: 800,
   height: 450,
   bounds: {x:60, y:50},
-  hitCorrection:{x:30,y:50},  
+  hitCorrection:{x:20,y:50},  
   buttonRadius: 30,
   debugAlpha: 0,
   isJuicy: 1,
@@ -14,13 +14,13 @@ export default {
   },
   palette: {  	
     colors80:[
-	    0xFFF001, //yellow
-	    0x99FC20, //green
-	    0x00E6FE, //light blue
-	    0xFD1999 //pink
+	    // 0xFFF001, //yellow
+	    0x2A0E79, //green
+	    0x44A6C6, //light blue
+	    0xDB1993 //pink
     ],
-    initScreen80:0xA10EEC,
-    gameScreen80: 0xFFF001,
+    initScreen80:0xDB1993,
+    gameScreen80: 0xDB1993,
     effectsLayer:null,
   },
 };

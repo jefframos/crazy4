@@ -13,6 +13,7 @@ PIXI.loader
 	.add('./assets/glitch1.jpg')
 	.add('./assets/frontTVSoft.png')
 	.add('./assets/logo.png')
+	.add('./assets/inGameBg1.png')
 	.add('./assets/fonts/super_smash_tv-webfont.woff')
 	.add('./assets/fonts/super_smash_tv-webfont.woff2')
 	.add('./assets/fonts/stylesheet.css')

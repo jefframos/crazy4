@@ -27,7 +27,7 @@ export default class InitScreen extends Screen{
 		utils.applyPositionCorrection(this.logo);
 		this.logoTimer = 0;
 		this.sinAcum = 0;
-		this.logoVelocity = 1;
+		this.logoVelocity = 2;
 		this.logo.interactive = true
 	    this.logo.buttonMode = true
 	    this.logo.on('tap', this.onLogoClick.bind(this))
@@ -50,7 +50,7 @@ export default class InitScreen extends Screen{
 
 	    this.playButton.position.set(config.width / 2, config.height / 1.5  + config.buttonRadius)
 	    utils.centerPivot(this.playButton);
-	    TweenLite.from(this.playButton.scale, 1, {delay:0.5, x:0,y:0, ease:"easeOutElastic"});
+	    TweenLite.from(this.buttonShape.scale, 0.5, {x:15,y:15});
 	    this.playButton.on('tap', this.onPlayButtonClick.bind(this))
 	    	.on('click', this.onPlayButtonClick.bind(this));
 
@@ -88,7 +88,7 @@ export default class InitScreen extends Screen{
 			this.targetColor = utils.getRandomValue(config.palette.colors80, [this.logo.tint,config.palette.initScreen80]);
 			TweenLite.to(this.logo, 0.8, {tint:this.targetColor});
 			TweenLite.to(this.buttonShape, 0.8, {tint:this.targetColor});
-			this.logoTimer = 1;
+			this.logoTimer = 2;
 		}else{
 			this.logoTimer -= delta;
 		}
@@ -101,13 +101,14 @@ export default class InitScreen extends Screen{
 	   
 	   	let alphaBG = new PIXI.Graphics()
 	    alphaBG.beginFill(0);	    
-	    alphaBG.drawCircle( -10, 10, config.buttonRadius );
-	    alphaBG.alpha = 0.15;
+	    alphaBG.drawCircle( -5, -5, config.buttonRadius );
+	    alphaBG.alpha = 0;
 	    utils.applyPositionCorrection(button.addChild( utils.addToContainer(alphaBG) ));
 
 	    this.buttonShape.beginFill(color);	    
-	    this.buttonShape.drawCircle( 0, 0, config.buttonRadius );
-	    utils.applyPositionCorrection((button.addChild( this.buttonShape)));
+	    this.buttonShape.drawCircle(0, 0, config.buttonRadius );
+	    //utils.applyPositionCorrection((button.addChild( this.buttonShape)));
+	    button.addChild( this.buttonShape)
 	    //utils.applyPositionCorrection();
 	    button.interactive = true
 	    button.buttonMode = true
