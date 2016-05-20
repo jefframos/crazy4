@@ -29812,17 +29812,17 @@
 	
 	var _GameScreen2 = _interopRequireDefault(_GameScreen);
 	
-	var _InitScreen = __webpack_require__(149);
+	var _InitScreen = __webpack_require__(150);
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _ScreenManager = __webpack_require__(150);
+	var _ScreenManager = __webpack_require__(151);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	PIXI.loader.add('./assets/frontTVDisplacement.jpg').add('./assets/glitch1.jpg').add('./assets/frontTVSoft.png').add('./assets/logo.png').add('./assets/inGameBg1.png').add('./assets/fonts/super_smash_tv-webfont.woff').add('./assets/fonts/super_smash_tv-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
+	PIXI.loader.add('./assets/frontTVDisplacement.jpg').add('./assets/glitch1.jpg').add('./assets/frontTVSoft.png').add('./assets/particle1.png').add('./assets/particle2.png').add('./assets/logo.png').add('./assets/inGameBg1.png').add('./assets/fonts/super_smash_tv-webfont.woff').add('./assets/fonts/super_smash_tv-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
 	
 	function configGame() {
 	
@@ -30172,13 +30172,14 @@
 			}
 		}, {
 			key: 'addShockwave',
-			value: function addShockwave(x, y, time) {
+			value: function addShockwave(x, y, time, delay) {
 				this.filtersActives[4] = true;
 				this.updateFilters();
 				this.shockwave.time = 0;
 				this.shockwave.center.x = x;
 				this.shockwave.center.y = y;
-				_gsap2.default.to(this.shockwave, time, { time: 1, onComplete: this.removeShockwave, onCompleteScope: this });
+				_gsap2.default.killTweensOf(this.shockwave);
+				_gsap2.default.to(this.shockwave, time, { delay: delay, time: 1, onComplete: this.removeShockwave, onCompleteScope: this });
 			}
 		}, {
 			key: 'fadeBloom',
@@ -37950,7 +37951,7 @@
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
-	var _Line = __webpack_require__(151);
+	var _Line = __webpack_require__(149);
 	
 	var _Line2 = _interopRequireDefault(_Line);
 	
@@ -37986,14 +37987,14 @@
 				this.inGameBg1 = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/inGameBg1.png'));
 				this.backgroundContainer.addChild(this.inGameBg1);
 				this.inGameBg1.position.set(0, _config2.default.height - this.inGameBg1.height);
-	
 				this.lineCounter = 1;
 				this.lineRespawn = 0.3;
 	
+				this.createParticles();
+	
 				this.screenContainer = new _pixi2.default.Container();
 				this.addChild(this.screenContainer);
-	
-				this.addChild(this.screenContainer);
+				this.normalizedDelta = 1;
 	
 				this.timerMax = 5;
 				this.timer = this.timerMax;
@@ -38010,11 +38011,12 @@
 	
 				this.gameMatrix = [];
 				this.entityMatrix = [];
-				this.matrixBounds = { i: 5, j: 11 };
+				this.entityColums = [];
+				this.matrixBounds = { i: 6, j: 7 };
 				this.configGameMatrix(this.matrixBounds.i, this.matrixBounds.j);
-				this.dotRadious = 15;
+				this.dotRadius = 15;
 				this.dotDistance = 20;
-				this.drawMatrix(this.dotRadious, this.dotDistance * 2);
+				this.drawMatrix(this.dotRadius, this.dotDistance * 2);
 	
 				this.gameContainer.pivot.x = this.gameContainer.width / 2;
 				this.gameContainer.pivot.y = this.gameContainer.height / 2;
@@ -38030,51 +38032,96 @@
 	
 				this.glichValue = 1;
 	
-				this.interactive = true;
+				this.interactive = false;
 				this.gameContainer.interactive = true;
 				// this.gameContainer.buttonMode = true;
-				this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
 	
-				this.on('tap', this.onGameClickCallback.bind(this)).on('click', this.onGameClickCallback.bind(this));
-				_utils2.default.addMockObject(this.gameContainer);
+				//utils.applyPositionCorrection(this.gameContainer);
+	
+				//utils.addMockObject(this.gameContainer);
 				this.startButton = this.createPlayButton();
 				_utils2.default.applyPositionCorrection(this.startButton);
 				this.screenContainer.addChild(this.startButton);
 				this.startButton.position.set(_config2.default.width / 2, _config2.default.height / 2);
 				_gsap2.default.from(this.startButton.position, 1, { delay: 0.5, y: _config2.default.height + this.startButton.height, ease: "easeOutBack" });
-				this.startButton.on('tap', this.initGame.bind(this)).on('click', this.initGame.bind(this));
 	
 				this.backButton = this.createButton();
 				this.screenContainer.addChild(this.backButton);
 				this.backButton.position.set(_config2.default.buttonRadius + _config2.default.bounds.x, _config2.default.buttonRadius + _config2.default.bounds.y);
 				_gsap2.default.from(this.backButton.scale, 0.8, { x: 20, y: 20 });
-				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
 	
+				this.pauseButton = this.createButton();
+				this.screenContainer.addChild(this.pauseButton);
+				this.pauseButton.position.set(_config2.default.width - _config2.default.buttonRadius * 2, _config2.default.buttonRadius + _config2.default.bounds.y);
+				//TweenLite.from(this.pauseButton.scale, 0.8, {x:20,y:20});
+	
+				this.currentConnectFactor = 4;
+				this.pause = false;
+				this.addEvents();
 				// this.initGame();
 			}
 	
 			//EVENTS
 	
 		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.off('tap').off('click');
+				this.startButton.off('tap', this.initGame.bind(this)).off('click', this.initGame.bind(this));
+				this.backButton.off('tap', this.onBackCallback.bind(this)).off('click', this.onBackCallback.bind(this));
+				this.pauseButton.off('tap', this.onPauseCallback.bind(this)).off('click', this.onPauseCallback.bind(this));
+				this.gameContainer.off('mousemove');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.on('tap', this.onGameClickCallback.bind(this)).on('click', this.onGameClickCallback.bind(this));
+				this.startButton.on('tap', this.initGame.bind(this)).on('click', this.initGame.bind(this));
+				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
+				this.pauseButton.on('tap', this.onPauseCallback.bind(this)).on('click', this.onPauseCallback.bind(this));
+				this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
+			}
+		}, {
 			key: 'onMouseMoveCallback',
 			value: function onMouseMoveCallback(e) {
-				this.findCol(e.data.global.x - e.target.position.x + e.target.pivot.x + _config2.default.hitCorrection.x);
+				if (!this.started) {
+					return;
+				}
+				// console.log(this.dotDistance, this.matrixBounds.j, this.dotRadius);
+				var width = e.target.width * e.target.scale.x - this.dotRadius / 2;
+				// let width = (this.dotDistance * (this.matrixBounds.j - 1)) + (this.dotRadius * this.matrixBounds.j);
+				var realativePosition = e.data.global.x - (e.target.position.x - width / 2) - this.dotRadius / 2;
+				if (_config2.default.isJuicy) {
+					this.findCol(realativePosition + _config2.default.hitCorrection.x, width);
+				} else {
+					this.findCol(realativePosition, width);
+				}
 			}
 		}, {
 			key: 'onGameClickCallback',
 			value: function onGameClickCallback() {
+				if (!this.playerRound || !this.started) {
+					return;
+				}
 				if (this.addElementOnColum(this.currentColum, 1)) {
 					this.resetTimer();
 					this.opponentPlay();
+					this.playerRound = false;
 				}
+			}
+		}, {
+			key: 'onPauseCallback',
+			value: function onPauseCallback() {
+				this.pause = !this.pause;
+				_gsap2.default.to(this, 3, { normalizedDelta: this.pause ? 0 : 1 });
 			}
 	
 			//GAMEPLAY
 	
 		}, {
 			key: 'findCol',
-			value: function findCol(position) {
-				this.currentColum = Math.floor(position / (this.dotRadious + this.dotDistance));
+			value: function findCol(position, width) {
+				this.currentColum = Math.floor((position + this.dotDistance) / (width / this.matrixBounds.j));
 				this.showCol(this.currentColum);
 			}
 		}, {
@@ -38095,6 +38142,9 @@
 		}, {
 			key: 'showCol',
 			value: function showCol(colum) {
+				if (this.pause) {
+					return;
+				}
 				this.updateColors();
 				if (colum < 0 || colum >= this.entityMatrix.length) {
 					return;
@@ -38109,68 +38159,267 @@
 		}, {
 			key: 'addElementOnColum',
 			value: function addElementOnColum(colum, id) {
-				if (colum < 0 || colum >= this.gameMatrix.length) {
+	
+				if (colum < 0 || colum >= this.gameMatrix.length || !this.started) {
 					return false;
 				}
 				var added = false;
+				var element = void 0;
+				var addedMatrixPosition = void 0;
 				for (var i = this.gameMatrix[colum].length - 1; i >= 0; i--) {
 					if (this.gameMatrix[colum][i] == 0) {
 						this.gameMatrix[colum][i] = id;
+						addedMatrixPosition = { j: colum, i: i };
+						element = this.entityMatrix[colum][i];
+						_gsap2.default.from(element.scale, 1, { x: 0, y: 0, ease: "easeOutElastic" });
+	
+						var normalX = (this.gameContainer.position.x - this.gameContainer.pivot.x + element.parent.position.x - this.dotRadius / 2) / _config2.default.width;
+						var normalY = (this.gameContainer.position.y - this.gameContainer.pivot.y + element.parent.position.y - this.dotRadius / 2) / _config2.default.height;
+	
+						_config2.default.effectsLayer.addShockwave(normalX, normalY, 0.5, 0.1);
 						added = true;
 						break;
 					}
 				};
 				this.updateColors();
-				this.verifyWinner();
+	
+				if (added) {
+					if (this.verifyWinner(addedMatrixPosition, id)) {
+						added = false;
+					}
+					var timeline = new TimelineLite();
+					timeline.add(_gsap2.default.to(this.entityColums[colum].position, 0.05, { y: 20 }));
+					timeline.add(_gsap2.default.to(this.entityColums[colum].position, 0.2, { y: 0, ease: "easeOutBack" }));
+				}
 				return added;
 			}
 			//trabalhar nisso
 	
 		}, {
 			key: 'verifyWinner',
-			value: function verifyWinner() {
+			value: function verifyWinner(addedMatrixPosition) {
 				//horizontal verification
-				var currentTestedHorizontal = void 0;
-				var currentTestedVertical = void 0;
-				var acumHorizontal = void 0;
-				var acumVertical = void 0;
-				for (var i = 0; i < this.entityMatrix.length; i++) {
-					acumVertical = 0;
+				var currentIdTested = void 0;
+				var seqAcum = void 0;
+				var possibleWinnerList = [];
+				// console.log(addedMatrixPosition);
 	
-					currentTestedVertical = -1;
-					for (var j = 0; j < this.entityMatrix[i].length; j++) {
-						if (currentTestedVertical < 0) {
-							currentTestedVertical = this.entityMatrix[i][j];
+				var diagonal1List = [];
+				var diagonal2List = [];
+				var decressVerify = { i: addedMatrixPosition.i, j: addedMatrixPosition.j };
+				var decressVerify2 = { i: addedMatrixPosition.i, j: addedMatrixPosition.j };
+				var duplicate = false;
+				diagonal1List.push({ j: decressVerify.j, i: decressVerify.i });
+				diagonal2List.push({ j: decressVerify2.j, i: decressVerify2.i });
+				for (var j = this.gameMatrix.length; j >= 0; j--) {
+					if (decressVerify.j >= 0 && decressVerify.i >= 0) {
+						duplicate = false;
+						for (var i = diagonal1List.length - 1; i >= 0; i--) {
+							if (diagonal1List[i].i == decressVerify.i && diagonal1List[i].j == decressVerify.j) {
+								duplicate = true;
+								break;
+							}
 						}
-						if (currentTestedVertical == this.entityMatrix[i][j] && this.entityMatrix[i][j] > 0) {
-							acumVertical++;
-						} else {
-							currentTestedVertical = this.entityMatrix[i][j];
-							acumVertical = 1;
+						if (!duplicate) {
+							diagonal1List.push({ i: decressVerify.i, j: decressVerify.j });
 						}
+						decressVerify.j--;
+						decressVerify.i--;
 					}
-					//console.log(acumVertical);
+					//add id
+					if (decressVerify2.j >= 0 && decressVerify2.i < this.gameMatrix[0].length) {
+						duplicate = false;
+						for (var i = diagonal2List.length - 1; i >= 0; i--) {
+							if (diagonal2List[i].i == decressVerify2.i && diagonal2List[i].j == decressVerify2.j) {
+								duplicate = true;
+								break;
+							}
+						}
+						if (!duplicate) {
+							diagonal2List.push({ i: decressVerify2.i, j: decressVerify2.j });
+						}
+						decressVerify2.j--;
+						decressVerify2.i++;
+					}
+				}
+	
+				decressVerify = { i: addedMatrixPosition.i, j: addedMatrixPosition.j };
+				decressVerify2 = { i: addedMatrixPosition.i, j: addedMatrixPosition.j };
+				for (var j = this.gameMatrix.length; j >= 0; j--) {
+					if (decressVerify.j < this.gameMatrix.length && decressVerify.i < this.gameMatrix[0].length) {
+						duplicate = false;
+						for (var i = diagonal1List.length - 1; i >= 0; i--) {
+							if (diagonal1List[i].i == decressVerify.i && diagonal1List[i].j == decressVerify.j) {
+								duplicate = true;
+								break;
+							}
+						}
+						if (!duplicate) {
+							diagonal1List.push({ i: decressVerify.i, j: decressVerify.j });
+						}
+						decressVerify.j++;
+						decressVerify.i++;
+					}
+	
+					if (decressVerify2.j < this.gameMatrix.length && decressVerify2.i >= 0) {
+						duplicate = false;
+						for (var i = diagonal2List.length - 1; i >= 0; i--) {
+							if (diagonal2List[i].i == decressVerify2.i && diagonal2List[i].j == decressVerify2.j) {
+								duplicate = true;
+								break;
+							}
+						}
+						if (!duplicate) {
+							diagonal2List.push({ i: decressVerify2.i, j: decressVerify2.j });
+						}
+						decressVerify2.j++;
+						decressVerify2.i--;
+					}
+				}
+				diagonal1List.sort(function (objt1, objt2) {
+					return objt1.j - objt2.j;
+				});
+				diagonal2List.sort(function (objt1, objt2) {
+					return objt1.j - objt2.j;
+				});
+	
+				seqAcum = 0;
+				currentIdTested = -1;
+				possibleWinnerList = [];
+	
+				for (var i = 0; i < diagonal1List.length; i++) {
+					if (currentIdTested < 0) {
+						currentIdTested = this.gameMatrix[diagonal1List[i].j][diagonal1List[i].i];
+					}
+					if (currentIdTested == this.gameMatrix[diagonal1List[i].j][diagonal1List[i].i] && this.gameMatrix[diagonal1List[i].j][diagonal1List[i].i] > 0) {
+						seqAcum++;
+					} else {
+						currentIdTested = this.gameMatrix[diagonal1List[i].j][diagonal1List[i].i];
+						possibleWinnerList = [];
+						seqAcum = 1;
+					}
+					possibleWinnerList.push(this.entityMatrix[diagonal1List[i].j][diagonal1List[i].i]);
+					if (seqAcum >= this.currentConnectFactor) {
+						this.haveWinner(currentIdTested, possibleWinnerList);
+						return true;
+						break;
+					}
+				}
+	
+				for (var i = 0; i < diagonal2List[i].length; i++) {
+					if (currentIdTested < 0) {
+						currentIdTested = this.gameMatrix[diagonal2List[i].j][diagonal2List[i].i];
+					}
+					if (currentIdTested == this.gameMatrix[diagonal2List[i].j][diagonal2List[i].i] && this.gameMatrix[diagonal2List[i].j][diagonal2List[i].i] > 0) {
+						seqAcum++;
+					} else {
+						currentIdTested = this.gameMatrix[diagonal2List[i].j][diagonal2List[i].i];
+						possibleWinnerList = [];
+						seqAcum = 1;
+					}
+					possibleWinnerList.push(this.entityMatrix[diagonal2List[i].j][diagonal2List[i].i]);
+					if (seqAcum >= this.currentConnectFactor) {
+						this.haveWinner(currentIdTested, possibleWinnerList);
+						return true;
+						break;
+					}
+				}
+	
+				seqAcum = 0;
+				currentIdTested = -1;
+				possibleWinnerList = [];
+				//HORIZONTAL
+				for (var i = 0; i < this.gameMatrix.length; i++) {
+					if (currentIdTested < 0) {
+						currentIdTested = this.gameMatrix[i][addedMatrixPosition.i];
+					}
+					if (currentIdTested == this.gameMatrix[i][addedMatrixPosition.i] && this.gameMatrix[i][addedMatrixPosition.i] > 0) {
+						seqAcum++;
+					} else {
+						currentIdTested = this.gameMatrix[i][addedMatrixPosition.i];
+						possibleWinnerList = [];
+						seqAcum = 1;
+					}
+					possibleWinnerList.push(this.entityMatrix[i][addedMatrixPosition.i]);
+					if (seqAcum >= this.currentConnectFactor) {
+						this.haveWinner(currentIdTested, possibleWinnerList);
+						return true;
+						break;
+					}
+				}
+	
+				seqAcum = 0;
+				currentIdTested = -1;
+				possibleWinnerList = [];
+				//VERTICAL
+				for (var j = 0; j < this.gameMatrix[addedMatrixPosition.j].length; j++) {
+					if (currentIdTested < 0) {
+						currentIdTested = this.gameMatrix[addedMatrixPosition.j][j];
+					}
+					if (currentIdTested == this.gameMatrix[addedMatrixPosition.j][j] && this.gameMatrix[addedMatrixPosition.j][j] > 0) {
+						seqAcum++;
+					} else {
+						currentIdTested = this.gameMatrix[addedMatrixPosition.j][j];
+						seqAcum = 1;
+						possibleWinnerList = [];
+					}
+					possibleWinnerList.push(this.entityMatrix[addedMatrixPosition.j][j]);
+					if (seqAcum >= this.currentConnectFactor) {
+						this.haveWinner(currentIdTested, possibleWinnerList);
+						return true;
+						break;
+					}
+				}
+	
+				return false;
+			}
+		}, {
+			key: 'hasDuplicated',
+			value: function hasDuplicated(array, obj) {
+				for (var i = array.length - 1; i >= 0; i--) {
+					if (array == obj) {
+						return true;
+						break;
+					}
+				}
+				return false;
+			}
+		}, {
+			key: 'haveWinner',
+			value: function haveWinner(id, graphicsList) {
+				console.log(graphicsList);
+				this.pause = true;
+				for (var i = graphicsList.length - 1; i >= 0; i--) {
+					graphicsList[i].tint = 0xFF0000;
 				}
 			}
 		}, {
 			key: 'opponentPlay',
 			value: function opponentPlay() {
 				var rndPlay = Math.floor(Math.random() * this.gameMatrix.length);
-				this.addElementOnColum(rndPlay, 2);
+				setTimeout(function () {
+					this.playerRound = true;
+					this.addElementOnColum(rndPlay, 2);
+				}.bind(this), 400);
 			}
 		}, {
 			key: 'initGame',
 			value: function initGame() {
-				this.started = true;
+				this.playerRound = true;
+				this.pause = false;
+				this.normalizedDelta = 1;
 				_gsap2.default.killTweensOf(this.startButton.position);
 				_gsap2.default.to(this.startButton.position, 0.4, { y: _config2.default.height + this.startButton.height, ease: "easeInBack" });
 				this.gameContainer.visible = true;
 				this.gameContainer.alpha = 0;
+				this.interactive = true;
 				_gsap2.default.killTweensOf(this.gameContainer);
 				_gsap2.default.killTweensOf(this.gameContainer.scale);
 				_gsap2.default.from(this.gameContainer.scale, 1, { delay: 0.3, y: 0.1, x: 0.1, ease: "easeOutBack" });
 				_gsap2.default.to(this.gameContainer, 0.5, { delay: 0.3, alpha: 1 });
 				this.timer = this.timerMax * 2;
+	
+				this.started = true;
 			}
 		}, {
 			key: 'resetTimer',
@@ -38191,6 +38440,7 @@
 			value: function destroyGame() {
 				this.resetTimer();
 				this.started = false;
+				this.removeEvents();
 			}
 	
 			//INITIALIZE
@@ -38198,6 +38448,9 @@
 		}, {
 			key: 'configGameMatrix',
 			value: function configGameMatrix(i, j) {
+				this.gameMatrix = [];
+				this.entityMatrix = [];
+				this.entityColums = [];
 				var tempArray = [];
 				var tempArray2 = [];
 				for (var jj = 0; jj < j; jj++) {
@@ -38214,18 +38467,23 @@
 		}, {
 			key: 'drawMatrix',
 			value: function drawMatrix(size, distance) {
+				this.entityColums = [];
 				for (var i = 0; i < this.gameMatrix.length; i++) {
+					var tempContainer = new _pixi2.default.Container();
 					for (var j = 0; j < this.gameMatrix[i].length; j++) {
 						var alphaBG = new _pixi2.default.Graphics();
 						alphaBG.beginFill(0xffffff);
 						alphaBG.drawCircle(0, 0, size);
 						var container = _utils2.default.addToContainer(alphaBG);
 						container.position.set(i * distance, j * distance);
-						this.gameContainer.addChild(container);
+						tempContainer.addChild(container);
+	
 						this.entityMatrix[i][j] = alphaBG;
 					}
+					this.gameContainer.addChild(tempContainer);
+					this.entityColums.push(tempContainer);
 				};
-				this.gameContainer.position.set(_config2.default.width / 2 - this.gameContainer.width / 2, _config2.default.height / 2 - this.gameContainer.height / 2);
+				this.gameContainer.position.set(_config2.default.width / 2 - this.gameContainer.width / 2 + size, _config2.default.height / 2 - this.gameContainer.height / 2);
 				_utils2.default.applyPositionCorrection(this.gameContainer);
 			}
 			//
@@ -38247,16 +38505,73 @@
 				this.screenManager.change("INIT");
 			}
 	
+			//PARTICLES
+	
+		}, {
+			key: 'updateParticles',
+			value: function updateParticles(delta) {
+				for (var i = 0; i < this.particleUpdater; i++) {
+					var particle = this.particles[i];
+					particle.direction += particle.turningSpeed * 0.01;
+					particle.position.x += Math.sin(particle.direction) * (particle.speed * particle.scale.y);
+					particle.position.y += Math.cos(particle.direction) * (particle.speed * particle.scale.y);
+					particle.rotation = -particle.direction + Math.PI;
+					particle.alpha += delta;
+					if (particle.position.x < 0 || particle.position.x > _config2.default.width || particle.y < 0) {
+						particle.x = _config2.default.width / 2 + Math.sin(particle.direction) * 100;
+						particle.y = _config2.default.height / 2 + Math.cos(particle.direction) * 50;
+						particle.alpha = 0;
+					}
+				}
+				this.particleUpdater += delta * 20;
+				if (this.particleUpdater > this.particles.length) {
+					this.particleUpdater = this.particles.length;
+				}
+			}
+		}, {
+			key: 'createParticles',
+			value: function createParticles() {
+				this.particleUpdater = 0;
+				this.particlesContainer = new _pixi2.default.ParticleContainer(500, {
+					scale: true,
+					position: true,
+					rotation: true,
+					uvs: true,
+					alpha: true
+				});
+				this.addChild(this.particlesContainer);
+				this.particles = [];
+				for (var i = 0; i < 50; i++) {
+					// create a new Sprite
+					var particle = _pixi2.default.Sprite.fromImage('./assets/particle2.png');
+					particle.anchor.set(0.5, 1);
+					particle.scale.set(1, 1);
+					var angle = (Math.random() * 180 + 90) / 180 * Math.PI;
+					// scatter them all
+					particle.x = _config2.default.width / 2 + Math.sin(angle) * 100;
+					particle.y = _config2.default.height / 2 + Math.cos(angle) * 50;
+	
+					particle.alpha = 0;
+	
+					// create a random direction in radians
+					particle.direction = angle;
+	
+					// this number will be used to modify the direction of the sprite over time
+					particle.turningSpeed = 0;
+	
+					// create a random speed between 0 - 2, and these maggots are slooww
+					particle.speed = 1 + Math.random() * 1.5;
+					this.particles.push(particle);
+					this.particlesContainer.addChild(particle);
+				}
+			}
+	
 			//UPDATE
 	
 		}, {
-			key: 'update',
-			value: function update(delta) {
-				_get(Object.getPrototypeOf(GameScreen.prototype), 'update', this).call(this, delta);
-				if (!this.started) {
-					return;
-				}
-				this.timer -= delta;
+			key: 'updateTimer',
+			value: function updateTimer(delta) {
+	
 				if (this.timer <= 0) {
 					this.resetTimer();
 					this.endTimer();
@@ -38266,6 +38581,21 @@
 					var rnd3 = String.fromCharCode(Math.floor(Math.random() * 20) + 65);
 					this.description.setText(this.timer.toFixed(3) + rnd1 + rnd2 + rnd3);
 				}
+	
+				if (this.pause) {
+					return;
+				}
+				this.timer -= delta;
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {
+				delta *= this.normalizedDelta;
+				_get(Object.getPrototypeOf(GameScreen.prototype), 'update', this).call(this, delta);
+				if (!this.started) {
+					return;
+				}
+				this.updateTimer(delta);
 				this.lineCounter -= delta;
 				if (this.lineCounter <= 0) {
 					this.lineCounter = this.lineRespawn;
@@ -38279,14 +38609,15 @@
 				this.gameContainer.scale.y += this.gameContainerVelocity.x * 0.01;
 				this.gameContainer.position.x += this.gameContainerVelocity.x;
 				this.gameContainer.position.y += this.gameContainerVelocity.y;
-				this.gameContainerVelocity.x = Math.sin(this.gameContainerSinAcum += 0.04) * 0.1;
-				this.gameContainerVelocity.y = Math.sin(this.gameContainerCosAcum += 0.03) * 0.1;
+				this.gameContainerVelocity.x = Math.sin(this.gameContainerSinAcum += 0.1) * 0.2;
+				this.gameContainerVelocity.y = Math.sin(this.gameContainerCosAcum += 0.08) * 0.6;
 	
 				this.glichValue -= delta;
 				if (this.glichValue < 0) {
 					this.randomBallGlitch();
 					this.glichValue = Math.random() * 2;
 				}
+				this.updateParticles(delta);
 			}
 	
 			//EFFECTS
@@ -38578,6 +38909,68 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _config = __webpack_require__(140);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _gsap = __webpack_require__(144);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Line = function (_PIXI$Container) {
+		_inherits(Line, _PIXI$Container);
+	
+		function Line(speed) {
+			_classCallCheck(this, Line);
+	
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Line).call(this));
+	
+			_this.speed = speed;
+			_this.line = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/line.png'));
+			_this.addChild(_this.line);
+			return _this;
+		}
+	
+		_createClass(Line, [{
+			key: 'update',
+			value: function update(delta) {
+				this.position.y += this.speed;
+	
+				if (this.position.y > _config2.default.height) {
+					this.kill = true;
+				}
+			}
+		}]);
+	
+		return Line;
+	}(_pixi2.default.Container);
+	
+	exports.default = Line;
+
+/***/ },
+/* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	var _pixi = __webpack_require__(1);
@@ -38740,7 +39133,7 @@
 	exports.default = InitScreen;
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38830,68 +39223,6 @@
 	}(_pixi2.default.Container);
 	
 	exports.default = ScreenManager;
-
-/***/ },
-/* 151 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var _pixi2 = _interopRequireDefault(_pixi);
-	
-	var _config = __webpack_require__(140);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _gsap = __webpack_require__(144);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Line = function (_PIXI$Container) {
-		_inherits(Line, _PIXI$Container);
-	
-		function Line(speed) {
-			_classCallCheck(this, Line);
-	
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Line).call(this));
-	
-			_this.speed = speed;
-			_this.line = new _pixi2.default.Sprite(_pixi2.default.Texture.fromImage('./assets/line.png'));
-			_this.addChild(_this.line);
-			return _this;
-		}
-	
-		_createClass(Line, [{
-			key: 'update',
-			value: function update(delta) {
-				this.position.y += this.speed;
-	
-				if (this.position.y > _config2.default.height) {
-					this.kill = true;
-				}
-			}
-		}]);
-	
-		return Line;
-	}(_pixi2.default.Container);
-	
-	exports.default = Line;
 
 /***/ }
 /******/ ]);

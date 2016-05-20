@@ -12,6 +12,8 @@ PIXI.loader
 	.add('./assets/frontTVDisplacement.jpg')
 	.add('./assets/glitch1.jpg')
 	.add('./assets/frontTVSoft.png')
+	.add('./assets/particle1.png')
+	.add('./assets/particle2.png')
 	.add('./assets/logo.png')
 	.add('./assets/inGameBg1.png')
 	.add('./assets/fonts/super_smash_tv-webfont.woff')

@@ -23,6 +23,7 @@
     "pixi.js": "^3.0.8",
     "transform-loader": "^0.2.3",
     "webpack": "^1.12.9",
-    "gsap": "^1.18.4"
+    "gsap": "^1.18.4",
+    "pixi-particles":"*"
   }
 }

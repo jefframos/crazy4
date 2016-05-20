@@ -92,13 +92,14 @@ export default class EffectLayer extends PIXI.Container{
 		this.filtersActives[4] = false;
 		this.updateFilters();	
 	}
-	addShockwave(x,y,time){
+	addShockwave(x,y,time, delay){
 		this.filtersActives[4] = true;
 		this.updateFilters();
 		this.shockwave.time = 0;
 		this.shockwave.center.x = x;
 		this.shockwave.center.y = y;
-		TweenLite.to(this.shockwave, time, {time:1, onComplete:this.removeShockwave, onCompleteScope: this});
+		TweenLite.killTweensOf(this.shockwave);
+		TweenLite.to(this.shockwave, time, {delay:delay, time:1, onComplete:this.removeShockwave, onCompleteScope: this});
 	}
 
 	fadeBloom(initValue, endValue, time, delay, removeAfter){
