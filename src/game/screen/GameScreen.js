@@ -249,14 +249,13 @@ export default class GameScreen extends Screen{
 		};
 	}
 	//if is possible, add on element on game
-	addElementOnColum(colum, id){		
-		if(!colum || colum < 0 || colum >= this.gameMatrix.length || !this.started || this.ended){
+	addElementOnColum(colum, id){
+		if((!colum && colum != 0) || colum < 0 || colum >= this.gameMatrix.length || !this.started || this.ended){
 			return false;
 		}
 		let added = false;
 		let element;
 		let addedMatrixPosition;
-		console.log(colum);
 		for (var i = this.gameMatrix[colum].length - 1; i >= 0; i--) {
 			if(this.gameMatrix[colum][i] == 0){
 				this.gameMatrix[colum][i] = id;
@@ -535,7 +534,7 @@ export default class GameScreen extends Screen{
 			TweenLite.to(element, 1, {x:1.2, y:1.2, delay:stdDelay, ease:"easeOutElastic"});
 
 		}
-		this.labelTimer.text = ("ITS OVER");
+		this.labelTimer.text = ("IT'S OVER");
 		this.labelTimer.style = (this.timerStylePause);
 		this.updateInstructions();
 		this.labelTimer.position.x = config.width / 2 - this.labelTimer.width / 2 + config.hitCorrection.x;

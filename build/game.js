@@ -38214,13 +38214,12 @@
 		}, {
 			key: 'addElementOnColum',
 			value: function addElementOnColum(colum, id) {
-				if (!colum || colum < 0 || colum >= this.gameMatrix.length || !this.started || this.ended) {
+				if (!colum && colum != 0 || colum < 0 || colum >= this.gameMatrix.length || !this.started || this.ended) {
 					return false;
 				}
 				var added = false;
 				var element = void 0;
 				var addedMatrixPosition = void 0;
-				console.log(colum);
 				for (var i = this.gameMatrix[colum].length - 1; i >= 0; i--) {
 					if (this.gameMatrix[colum][i] == 0) {
 						this.gameMatrix[colum][i] = id;
@@ -38508,7 +38507,7 @@
 					_gsap2.default.to(element, 0.5, { tint: _config2.default.palette.currentGameStateColor, delay: stdDelay });
 					_gsap2.default.to(element, 1, { x: 1.2, y: 1.2, delay: stdDelay, ease: "easeOutElastic" });
 				}
-				this.labelTimer.text = "ITS OVER";
+				this.labelTimer.text = "IT'S OVER";
 				this.labelTimer.style = this.timerStylePause;
 				this.updateInstructions();
 				this.labelTimer.position.x = _config2.default.width / 2 - this.labelTimer.width / 2 + _config2.default.hitCorrection.x;
