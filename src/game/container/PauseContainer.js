@@ -13,7 +13,7 @@ export default class PauseContainer extends PIXI.Container{
 		this.addChild(this.continueButton);
 		this.continueButton.position.set(config.width / 2 -continueButtonConfig.size.width/2, config.height/2 + continueButtonConfig.size.height/2);
 
-		let reestartButtonConfig = this.createButton("REESTART");
+		let reestartButtonConfig = this.createButton("RESTART");
 		this.reestartButton = reestartButtonConfig.button;
 		this.addChild(this.reestartButton);
 		this.reestartButton.position.set(config.width / 2 -reestartButtonConfig.size.width/2, this.continueButton.position.y + buttonDistance);

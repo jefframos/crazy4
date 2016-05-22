@@ -39551,7 +39551,7 @@
 			_this.addChild(_this.continueButton);
 			_this.continueButton.position.set(_config2.default.width / 2 - continueButtonConfig.size.width / 2, _config2.default.height / 2 + continueButtonConfig.size.height / 2);
 	
-			var reestartButtonConfig = _this.createButton("REESTART");
+			var reestartButtonConfig = _this.createButton("RESTART");
 			_this.reestartButton = reestartButtonConfig.button;
 			_this.addChild(_this.reestartButton);
 			_this.reestartButton.position.set(_config2.default.width / 2 - reestartButtonConfig.size.width / 2, _this.continueButton.position.y + buttonDistance);
@@ -39681,7 +39681,7 @@
 			_this.addChild(_this.status);
 			_this.status.position.set(_config2.default.width / 2 - _this.status.width / 2, 0);
 	
-			var reestartButtonConfig = _this.createButton("REESTART");
+			var reestartButtonConfig = _this.createButton("RESTART");
 			_this.reestartButton = reestartButtonConfig.button;
 			_this.addChild(_this.reestartButton);
 			_this.reestartButton.position.set(_config2.default.width / 2 - reestartButtonConfig.size.width / 2, _config2.default.height / 2 + reestartButtonConfig.size.height / 2);

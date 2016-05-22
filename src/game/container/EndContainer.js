@@ -13,7 +13,7 @@ export default class EndContainer extends PIXI.Container{
 	    this.addChild(this.status);
 	    this.status.position.set(config.width/2 - this.status.width/2, 0);
 
-		let reestartButtonConfig = this.createButton("REESTART");
+		let reestartButtonConfig = this.createButton("RESTART");
 		this.reestartButton = reestartButtonConfig.button;
 		this.addChild(this.reestartButton);
 		this.reestartButton.position.set(config.width / 2 -reestartButtonConfig.size.width/2, config.height/2 + reestartButtonConfig.size.height/2);
