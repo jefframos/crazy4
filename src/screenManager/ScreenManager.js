@@ -20,11 +20,11 @@ export default class ScreenManager extends PIXI.Container{
 				tempScreen = this.screenList[i];
 			}
 		}
-
 		if(this.currentScreen){
 			this.currentScreen.transitionOut(tempScreen);
 		}
 	}
+	//change between screens
 	forceChange(screenLabel){
 		if(this.currentScreen && this.currentScreen.parent){
 			this.removeChild(this.currentScreen);
@@ -36,7 +36,6 @@ export default class ScreenManager extends PIXI.Container{
 			}
 		}
 		this.currentScreen = tempScreen;
-		console.log(screenLabel);
 		this.currentScreen.build();
 		this.currentScreen.transitionIn();
 		this.addChild(this.currentScreen);	

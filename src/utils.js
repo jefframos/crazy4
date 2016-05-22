@@ -42,6 +42,13 @@ export default {
   	element.position.x += element.width / 2;
   	element.position.y += element.height / 2;
   },
+  addMockRect(element, width, height){
+    let fake = new PIXI.Graphics()
+    fake.beginFill(0);      
+    fake.drawRect(-width,-height,width*2,height*2);
+    fake.alpha = 0;
+    element.addChild( (fake) );
+  },
   addMockObject(element){
     if(config.isJuicy == 0){
       return;

@@ -1,21 +1,21 @@
 import PIXI from 'pixi.js';
 
 export default class Screen extends PIXI.Container{
-	label = "";
-	entityList = [];
-	updateable = false;
-	nextScreen;
-	screenManager;
-	label;
-	built;
 	constructor(label){  		
 		super();
 		this.label = label;
+		this.entityList = [];
+		this.updateable = false;
+		this.nextScreen;
+		this.screenManager;
+		this.built;
 	}
+	//add here the entities to easily remove after by parameter "kill"
 	addChild(entity){
 		super.addChild(entity);
 		this.entityList.push(entity);
 	}
+	//if the element is inside another, put here to force updates on the screen
 	addOnUpdateList(entity){
 		for(let i = 0; i < this.entityList.length; i++){
 			if(this.entityList[i] == entity){
@@ -44,7 +44,6 @@ export default class Screen extends PIXI.Container{
 		}
 	}
 
-	//NPM RUN DEV
 	destroy(){
 		this.built = false;
 		if(this.entityList){
@@ -60,20 +59,16 @@ export default class Screen extends PIXI.Container{
 		this.built = true;
 	}
 	transitionIn(){
-		console.log('in');
 		this.updateable = true;
 		this.endTransitionIn();
 	}
 	endTransitionIn(){
-		console.log('endIn');
 	}
 	transitionOut(nextScreen){
-		console.log('out');
 		this.nextScreen = nextScreen;
 		this.endTransitionOut();
 	}
 	endTransitionOut(){
-		console.log('endOut');
 		this.updateable = false;
 		this.screenManager.forceChange(this.nextScreen.label);
 		this.destroy();

@@ -12,7 +12,6 @@ export default class InitScreen extends Screen{
 		super(label);
 	}
 	build(){
-		console.log("BUILD");
 		super.build();
 		this.background = new PIXI.Graphics();
 		this.background.beginFill(config.palette.initScreen80);
@@ -44,20 +43,23 @@ export default class InitScreen extends Screen{
 	    this.screenContainer.addChild(this.descriptionLogo);
 	    this.descriptionLogo.position.set(config.width/2 - this.description.width/2,config.height / 2 - this.description.height/2 + 50);
 
-		this.playButton = this.createButton();
+		this.playButton = this.createButton("");
 	    this.addChild(this.screenContainer)
 	    this.screenContainer.addChild(this.playButton)
 
 	    this.playButton.position.set(config.width / 2, config.height / 1.5  + config.buttonRadius)
 	    utils.centerPivot(this.playButton);
-	    TweenLite.from(this.buttonShape.scale, 0.5, {x:15,y:15});
+
+	    config.effectsLayer.hideGreyShape(1, 1);
+	    TweenLite.from(this.buttonShape.scale, 0.5, {delay:config.firstEntry?0:1.2, x:20,y:20});
 	    this.playButton.on('tap', this.onPlayButtonClick.bind(this))
 	    	.on('click', this.onPlayButtonClick.bind(this));
-
+	    config.effectsLayer.removeBloom();
+	    config.firstEntry = true;
 	}
 	onPlayButtonClick() {
 		config.effectsLayer.addShockwave(this.playButton.position.x / config.width,this.playButton.position.y / config.height,0.8);
-		config.effectsLayer.fadeBloom(100,0,0.5,0, true);
+		config.effectsLayer.fadeBloom(20,0,0.5,0, true);
 		TweenLite.killTweensOf(this.logo);
 		TweenLite.killTweensOf(this.buttonShape, true);
 		this.logo.tint = this.targetColor;
@@ -74,7 +76,7 @@ export default class InitScreen extends Screen{
 		config.effectsLayer.shake(1,15,1);
 		config.effectsLayer.addShockwave(0.5,0.5,0.8);
 		config.effectsLayer.shakeSplitter(1,10,1.8);
-		config.effectsLayer.fadeBloom(100,0,0.5,0, true);
+		config.effectsLayer.fadeBloom(20,0,0.5,0, true);
 	}
 	update(delta){
 		super.update(delta);
@@ -94,28 +96,23 @@ export default class InitScreen extends Screen{
 		}
 	}
 
-	createButton ( ) {
+	createButton (label) {
 	    let button = new PIXI.Container()
-	    this.buttonShape = new PIXI.Graphics()
+	    this.buttonShape = new PIXI.Graphics();
 	    let color = 0xFFFFFF;
 	   
-	   	let alphaBG = new PIXI.Graphics()
+	   	let alphaBG = new PIXI.Graphics();
 	    alphaBG.beginFill(0);	    
 	    alphaBG.drawCircle( -5, -5, config.buttonRadius );
 	    alphaBG.alpha = 0;
 	    utils.applyPositionCorrection(button.addChild( utils.addToContainer(alphaBG) ));
-
 	    this.buttonShape.beginFill(color);	    
 	    this.buttonShape.drawCircle(0, 0, config.buttonRadius );
-	    //utils.applyPositionCorrection((button.addChild( this.buttonShape)));
 	    button.addChild( this.buttonShape)
-	    //utils.applyPositionCorrection();
 	    button.interactive = true
 	    button.buttonMode = true
 
 	    utils.addMockObject(button);
-
-	    console.log(button);
 	    return button
 	}
 }

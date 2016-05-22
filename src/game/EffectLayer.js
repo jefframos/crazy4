@@ -14,6 +14,12 @@ export default class EffectLayer extends PIXI.Container{
 	    this.blackShape.alpha = 0;
 		this.addChild(this.blackShape);
 
+		this.grey = new PIXI.Graphics();
+		this.grey.beginFill(0X555555);
+	    this.grey.drawRect( 0, 0, config.width, config.height);
+	    this.grey.alpha = 1;
+		this.addChild(this.grey);
+
 		this.tvLines = new PIXI.extras.TilingSprite(PIXI.Texture.fromImage('./assets/tvlines.png', config.width, config.height))
 		this.addChild(this.tvLines)
 		this.tvLines.width = config.width;
@@ -66,6 +72,9 @@ export default class EffectLayer extends PIXI.Container{
 
 
 	}
+	hideGreyShape(time, delay){
+		TweenLite.to(this.grey, time, {alpha:0, delay:delay});
+	}
 	updateFilters(){
 		if(config.isJuicy == 0){
 			return;
@@ -105,7 +114,11 @@ export default class EffectLayer extends PIXI.Container{
 	fadeBloom(initValue, endValue, time, delay, removeAfter){
 		this.addBloom();
 		this.bloom.blur = initValue;
-		TweenLite.to(this.bloom, time, {delay:delay, blur:endValue, onComplete:this.removeBloom, onCompleteScope: this});
+		if(removeAfter){
+			TweenLite.to(this.bloom, time, {delay:delay, blur:endValue, onComplete:this.removeBloom, onCompleteScope: this});
+		}else{
+			TweenLite.to(this.bloom, time, {delay:delay, blur:endValue});
+		}
 	}
 	shakeSplitter(force, steps, time){
 		if(config.isJuicy == 0){
@@ -160,9 +173,7 @@ export default class EffectLayer extends PIXI.Container{
 
 	update(delta){
 		this.tvLines.tilePosition.y += Math.random()*2 - 1;
-
 		this.blackShape.alpha =  Math.random() * 0.2;
-
 		this.glitch1.tilePosition.y += 1;
 	}
 }
