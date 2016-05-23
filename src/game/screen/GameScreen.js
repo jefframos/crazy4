@@ -950,6 +950,7 @@ export default class GameScreen extends Screen{
 	    button.interactive = true
 	    button.buttonMode = true
 	    utils.addMockRect(button, descriptionLabel.width, descriptionLabel.height)
+	    descriptionLabel.position.x += 25;
 	    return {button:button, size:{width:descriptionLabel.width, height:descriptionLabel.height}}
 	}
 	createButton(label) {

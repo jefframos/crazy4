@@ -38970,6 +38970,7 @@
 				button.interactive = true;
 				button.buttonMode = true;
 				_utils2.default.addMockRect(button, descriptionLabel.width, descriptionLabel.height);
+				descriptionLabel.position.x += 25;
 				return { button: button, size: { width: descriptionLabel.width, height: descriptionLabel.height } };
 			}
 		}, {
@@ -39641,11 +39642,16 @@
 				this.screenContainer = new _pixi2.default.Container();
 				this.addChild(this.screenContainer);
 	
-				this.description = new _pixi2.default.Text('by Jeff Ramos', { font: '24px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.description = new _pixi2.default.Text('by Jeff Ramos', { font: '36px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.description.interactive = true;
+				this.description.buttonMode = true;
+				_utils2.default.addMockRect(this.description, this.description.width, this.description.height);
+				this.description.on('tap', this.goToPortfolio.bind(this)).on('click', this.goToPortfolio.bind(this));
+	
 				this.screenContainer.addChild(this.description);
 				this.description.position.set(_config2.default.width - this.description.width - _config2.default.bounds.x, _config2.default.height - _config2.default.bounds.y - 10);
 	
-				this.descriptionLogo = new _pixi2.default.Text('SHAKE IT!', { font: '24px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				this.descriptionLogo = new _pixi2.default.Text('SHAKE IT!', { font: '20px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
 				this.screenContainer.addChild(this.descriptionLogo);
 				this.descriptionLogo.position.set(_config2.default.width / 2 - this.description.width / 2, _config2.default.height / 2 - this.description.height / 2 + 50);
 	
@@ -39661,6 +39667,11 @@
 				this.playButton.on('tap', this.onPlayButtonClick.bind(this)).on('click', this.onPlayButtonClick.bind(this));
 				_config2.default.effectsLayer.removeBloom();
 				_config2.default.firstEntry = true;
+			}
+		}, {
+			key: 'goToPortfolio',
+			value: function goToPortfolio() {
+				window.open('http://www.jefframos.me', '_blank');
 			}
 		}, {
 			key: 'onPlayButtonClick',
@@ -39690,9 +39701,30 @@
 				_config2.default.effectsLayer.fadeBloom(20, 0, 0.5, 0, true);
 			}
 		}, {
+			key: 'shuffleText',
+			value: function shuffleText(label) {
+				var rnd1 = String.fromCharCode(Math.floor(Math.random() * 20) + 65);
+				var rnd2 = Math.floor(Math.random() * 9);
+				var rnd3 = String.fromCharCode(Math.floor(Math.random() * 20) + 65);
+				var tempLabel = label.split('');
+				var rndPause = Math.random();
+				if (rndPause < 0.2) {
+					tempLabel[Math.floor(Math.random() * tempLabel.length)] = rnd2;
+					tempLabel[Math.floor(Math.random() * tempLabel.length)] = rnd3;
+				} else if (rndPause < 0.5) {
+					tempLabel[Math.floor(Math.random() * tempLabel.length)] = rnd3;
+				}
+				var returnLabel = '';
+				for (var i = 0; i < tempLabel.length; i++) {
+					returnLabel += tempLabel[i];
+				}
+				return returnLabel;
+			}
+		}, {
 			key: 'update',
 			value: function update(delta) {
 				_get(Object.getPrototypeOf(InitScreen.prototype), 'update', this).call(this, delta);
+				this.description.text = this.shuffleText('By JEFF RAMOS');
 				if (_config2.default.isJuicy == 0) {
 					this.targetColor = _utils2.default.getRandomValue(_config2.default.palette.colors80, [this.logo.tint, _config2.default.palette.initScreen80]);
 					return;

@@ -35,11 +35,16 @@ export default class InitScreen extends Screen{
 		this.screenContainer = new PIXI.Container();
 		this.addChild(this.screenContainer);
 
-		this.description = new PIXI.Text('by Jeff Ramos',{font : '24px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+		this.description = new PIXI.Text('by Jeff Ramos',{font : '36px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+		this.description.interactive = true;
+		this.description.buttonMode = true;
+		utils.addMockRect(this.description, this.description.width, this.description.height)
+		this.description.on('tap', this.goToPortfolio.bind(this)).on('click', this.goToPortfolio.bind(this));	
+
 	    this.screenContainer.addChild(this.description);
 	    this.description.position.set(config.width - this.description.width - config.bounds.x,config.height - config.bounds.y - 10);
 
-	    this.descriptionLogo = new PIXI.Text('SHAKE IT!',{font : '24px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+	    this.descriptionLogo = new PIXI.Text('SHAKE IT!',{font : '20px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
 	    this.screenContainer.addChild(this.descriptionLogo);
 	    this.descriptionLogo.position.set(config.width/2 - this.description.width/2,config.height / 2 - this.description.height/2 + 50);
 
@@ -56,6 +61,9 @@ export default class InitScreen extends Screen{
 	    	.on('click', this.onPlayButtonClick.bind(this));
 	    config.effectsLayer.removeBloom();
 	    config.firstEntry = true;
+	}
+	goToPortfolio() {
+		 window.open('http://www.jefframos.me', '_blank');
 	}
 	onPlayButtonClick() {
 		config.effectsLayer.addShockwave(this.playButton.position.x / config.width,this.playButton.position.y / config.height,0.8);
@@ -78,8 +86,27 @@ export default class InitScreen extends Screen{
 		config.effectsLayer.shakeSplitter(1,10,1.8);
 		config.effectsLayer.fadeBloom(20,0,0.5,0, true);
 	}
+	shuffleText(label){
+		let rnd1 = String.fromCharCode(Math.floor(Math.random()*20) + 65);
+		let rnd2 = Math.floor(Math.random()* 9);
+		let rnd3 = String.fromCharCode(Math.floor(Math.random()*20) + 65);
+		let tempLabel = label.split('');
+		let rndPause = Math.random();
+		if(rndPause < 0.2){
+			tempLabel[Math.floor(Math.random()*tempLabel.length)] = rnd2;
+			tempLabel[Math.floor(Math.random()*tempLabel.length)] = rnd3;
+		}else if(rndPause < 0.5){
+			tempLabel[Math.floor(Math.random()*tempLabel.length)] = rnd3;
+		}
+		let returnLabel = '';
+		for (var i = 0; i < tempLabel.length; i++) {
+			returnLabel+=tempLabel[i];
+		}
+		return returnLabel
+	}
 	update(delta){
 		super.update(delta);
+		this.description.text = this.shuffleText('By JEFF RAMOS');
 		if(config.isJuicy == 0){
 			this.targetColor = utils.getRandomValue(config.palette.colors80, [this.logo.tint,config.palette.initScreen80]);
 			return;
