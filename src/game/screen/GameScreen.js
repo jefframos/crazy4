@@ -51,19 +51,16 @@ export default class GameScreen extends Screen{
 	    this.labelTimer.position.set(config.width/2 - this.labelTimer.width/2, 0);
 	    utils.applyPositionCorrection(this.labelTimer);
 
-	    this.labelInstruction = new PIXI.Text('0',{font : '26px super_smash_tvregular', fill : 0xFFFFFF, align : 'center'});
+	    this.labelInstruction = new PIXI.Text('0',{font : '40px super_smash_tvregular', fill : 0xFFFFFF, align : 'center'});
 	    this.labelInstruction.position.set(config.width/2 - this.labelTimer.width/2, this.labelTimer.position.y + this.labelTimer.height);
 		this.screenContainer.addChild(this.labelInstruction);
 		this.labelInstruction.visible = false;
 		this.labelTimer.visible = false;
-	    //game bounds
-	    this.matrixBounds = {i:5, j:7};
-	     //connect number
-	    this.currentConnectFactor = 4;
+	    
 
 	    //size and distance of dots
-	    this.dotRadius = 15;
-	    this.dotDistance = 20;
+	    this.dotRadius = 16;
+	    this.dotDistance = 18;
 
 
 	    //create and position game container
@@ -90,8 +87,15 @@ export default class GameScreen extends Screen{
 	    this.startButton = playObj.button;
 	    // utils.applyPositionCorrection(this.startButton);
 	    this.screenContainer.addChild(this.startButton);
-	    this.startButton.position.set(config.width/2 - playObj.size.width/2, config.height/2)
+	    this.startButton.position.set(config.width/2 - playObj.size.width/2, config.height/2 - playObj.size.height)
 	    TweenLite.from(this.startButton.position, 1, {delay:0.5, y:config.height + playObj.size.height, ease:"easeOutBack"});
+
+	    let playHardObj = this.createPlayButton("HARDCORE");
+	    this.hardCoreButton = playHardObj.button;
+	    // utils.applyPositionCorrection(this.hardCoreButton);
+	    this.screenContainer.addChild(this.hardCoreButton);
+	    this.hardCoreButton.position.set(config.width/2 - playHardObj.size.width/2, config.height/2 + playHardObj.size.height/2)
+	    TweenLite.from(this.hardCoreButton.position, 1, {delay:0.7, y:config.height + playHardObj.size.height + 50, ease:"easeOutBack"});
 	    
 	    //create pause button
 	    this.pauseButton = this.createButton("P").button;
@@ -129,6 +133,7 @@ export default class GameScreen extends Screen{
 	
 	//EVENTS
 	removeEvents(){
+		this.hardCoreButton.off('tap').off('click');
 		this.startButton.off('tap').off('click');
 		this.backButton.off('tap').off('click');
 		this.pauseButton.off('tap').off('click');
@@ -137,7 +142,8 @@ export default class GameScreen extends Screen{
 	}
 	addEvents(){
 		this.removeEvents();
-	    this.startButton.on('tap', this.initGame.bind(this)).on('click', this.initGame.bind(this));	    
+	    this.hardCoreButton.on('tap', this.initGameHardcore.bind(this)).on('click', this.initGameHardcore.bind(this));	    
+	    this.startButton.on('tap', this.initGameNormal.bind(this)).on('click', this.initGameNormal.bind(this));	    
 	    this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));	    
 	    this.pauseButton.on('tap', this.onPauseCallback.bind(this)).on('click', this.onPauseCallback.bind(this));	    
 	    this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
@@ -314,6 +320,7 @@ export default class GameScreen extends Screen{
 				added = this.addElementOnColum(rndPlay, 2).added;
 				rndPlay = Math.floor(Math.random() * this.gameMatrix.length);
 			};
+			this.resetTimer	();
 		}.bind(this), 400);		
 	}
 	//verify if have winner
@@ -575,10 +582,17 @@ export default class GameScreen extends Screen{
 		let labelStatus = "DRAW";
 		if(idWinner == 1){
 			labelStatus = "YOU WIN";
+			this.endContainer.setStatus("LEVEL "+(config.currentLevel + 1), 0);
 		}else if(idWinner == 2){
 			labelStatus = "YOU LOOSE";
+			this.endContainer.setStatus(labelStatus, 1);
+		}else{
+			this.endContainer.setStatus("LEVEL "+(config.currentLevel + 1), -1);
 		}
-		this.endContainer.setStatus(labelStatus);
+		this.labelTimer.text = labelStatus;
+		this.labelTimer.position.x = config.width / 2 - this.labelTimer.width / 2 + config.hitCorrection.x;
+
+		
 		this.endContainer.show(delay);		
 	}
 	forceHideGame(){
@@ -622,7 +636,22 @@ export default class GameScreen extends Screen{
 		this.entityMatrix = [];
 	}
 	//init game
+	initGameNormal() {
+		config.currentLevel = 0;
+		this.initGame();
+	}
+	initGameHardcore() {
+		config.currentLevel = config.levels.length - 1;
+		this.initGame();
+	}
 	initGame() {
+		this.levelConf = config.levels[config.currentLevel];
+		//game bounds
+	    this.matrixBounds = this.levelConf.bounds;
+	     //connect number
+	    this.currentConnectFactor = this.levelConf.connect;
+	    this.timerMax = this.levelConf.timer;
+
 		this.labelInstruction.visible = true;
 		this.labelTimer.visible = true;
 		this.pauseButton.visible = true;
@@ -652,7 +681,10 @@ export default class GameScreen extends Screen{
 		this.normalizedDelta = 1;
 		//hide start button
 		TweenLite.killTweensOf(this.startButton.position);
-		TweenLite.to(this.startButton.position, 0.4, {y:config.height + this.startButton.height, ease:"easeInBack"});
+		TweenLite.to(this.startButton.position, 0.4, {delay:0.2, y:config.height + this.startButton.height, ease:"easeInBack"});
+
+		TweenLite.killTweensOf(this.hardCoreButton.position);
+		TweenLite.to(this.hardCoreButton.position, 0.4, {y:config.height + this.hardCoreButton.height, ease:"easeInBack"});
 		//show game container
 		this.gameContainer.visible = true;
 		this.gameContainer.alpha = 0;
@@ -909,7 +941,7 @@ export default class GameScreen extends Screen{
 	createPlayButton(label) {
 	    let button = new PIXI.Container()
 	    let shape = new PIXI.Graphics()
-	    let descriptionLabel = new PIXI.Text(label,{font : '120px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
+	    let descriptionLabel = new PIXI.Text(label,{font : '80px super_smash_tvregular', fill : 0xFFFFFF, align : 'right'});
 	    let color = 0x00FFFF;
 	    shape.beginFill(color);	   
 	    shape.drawRect( 0, 0, descriptionLabel.width, descriptionLabel.height );

@@ -29800,19 +29800,19 @@
 	
 	var _Game2 = _interopRequireDefault(_Game);
 	
-	var _EffectLayer = __webpack_require__(143);
+	var _EffectLayer = __webpack_require__(142);
 	
 	var _EffectLayer2 = _interopRequireDefault(_EffectLayer);
 	
-	var _GameScreen = __webpack_require__(146);
+	var _GameScreen = __webpack_require__(145);
 	
 	var _GameScreen2 = _interopRequireDefault(_GameScreen);
 	
-	var _InitScreen = __webpack_require__(150);
+	var _InitScreen = __webpack_require__(151);
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _ScreenManager = __webpack_require__(151);
+	var _ScreenManager = __webpack_require__(152);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
 	
@@ -29900,7 +29900,10 @@
 		buttonRadius: 30,
 		debugAlpha: 0,
 		isJuicy: 1,
+		hardcore: false,
 		webgl: true,
+		levels: [{ timer: 6, bounds: { i: 4, j: 5 }, connect: 3 }, { timer: 3, bounds: { i: 4, j: 5 }, connect: 3 }, { timer: 2, bounds: { i: 4, j: 7 }, connect: 3 }, { timer: 5, bounds: { i: 5, j: 5 }, connect: 4 }, { timer: 3, bounds: { i: 5, j: 5 }, connect: 4 }, { timer: 2, bounds: { i: 5, j: 5 }, connect: 4 }, { timer: 5, bounds: { i: 5, j: 9 }, connect: 5 }, { timer: 3, bounds: { i: 5, j: 11 }, connect: 5 }, { timer: 2, bounds: { i: 5, j: 11 }, connect: 5 }, { timer: 1.5, bounds: { i: 5, j: 13 }, connect: 5 }],
+		currentLevel: 0,
 		firstEntry: false,
 		rendererOptions: {
 			//pixi rendererOptions
@@ -29998,8 +30001,7 @@
 	exports.default = Game;
 
 /***/ },
-/* 142 */,
-/* 143 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30018,7 +30020,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _gsap = __webpack_require__(144);
+	var _gsap = __webpack_require__(143);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -30231,7 +30233,7 @@
 	exports.default = EffectLayer;
 
 /***/ },
-/* 144 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -36097,7 +36099,7 @@
 							if (global) {
 								_globals[n] = cl; //provides a way to avoid global namespace pollution. By default, the main classes like TweenLite, Power1, Strong, etc. are added to window unless a GreenSockGlobals is defined. So if you want to have things added to a custom object instead, just do something like window.GreenSockGlobals = {} before loading any GreenSock files. You can even set up an alias like window.GreenSockGlobals = windows.gs = {} so that you can access everything like gs.TweenLite. Also remember that ALL classes are added to the window.com.greensock object (in their respective packages, like com.greensock.easing.Power1, com.greensock.TweenLite, etc.)
 								hasModule = (typeof(module) !== "undefined" && module.exports);
-								if (!hasModule && "function" === "function" && __webpack_require__(145)){ //AMD
+								if (!hasModule && "function" === "function" && __webpack_require__(144)){ //AMD
 									!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() { return cl; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 								} else if (ns === moduleName && hasModule){ //node
 									module.exports = cl;
@@ -37882,7 +37884,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 145 */
+/* 144 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -37890,7 +37892,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 146 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37907,7 +37909,7 @@
 	
 	var _pixi2 = _interopRequireDefault(_pixi);
 	
-	var _gsap = __webpack_require__(144);
+	var _gsap = __webpack_require__(143);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -37915,23 +37917,23 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(147);
+	var _utils = __webpack_require__(146);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(148);
+	var _Screen2 = __webpack_require__(147);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
-	var _Line = __webpack_require__(149);
+	var _Line = __webpack_require__(148);
 	
 	var _Line2 = _interopRequireDefault(_Line);
 	
-	var _PauseContainer = __webpack_require__(152);
+	var _PauseContainer = __webpack_require__(149);
 	
 	var _PauseContainer2 = _interopRequireDefault(_PauseContainer);
 	
-	var _EndContainer = __webpack_require__(153);
+	var _EndContainer = __webpack_require__(150);
 	
 	var _EndContainer2 = _interopRequireDefault(_EndContainer);
 	
@@ -37994,19 +37996,15 @@
 				this.labelTimer.position.set(_config2.default.width / 2 - this.labelTimer.width / 2, 0);
 				_utils2.default.applyPositionCorrection(this.labelTimer);
 	
-				this.labelInstruction = new _pixi2.default.Text('0', { font: '26px super_smash_tvregular', fill: 0xFFFFFF, align: 'center' });
+				this.labelInstruction = new _pixi2.default.Text('0', { font: '40px super_smash_tvregular', fill: 0xFFFFFF, align: 'center' });
 				this.labelInstruction.position.set(_config2.default.width / 2 - this.labelTimer.width / 2, this.labelTimer.position.y + this.labelTimer.height);
 				this.screenContainer.addChild(this.labelInstruction);
 				this.labelInstruction.visible = false;
 				this.labelTimer.visible = false;
-				//game bounds
-				this.matrixBounds = { i: 5, j: 7 };
-				//connect number
-				this.currentConnectFactor = 4;
 	
 				//size and distance of dots
-				this.dotRadius = 15;
-				this.dotDistance = 20;
+				this.dotRadius = 16;
+				this.dotDistance = 18;
 	
 				//create and position game container
 				this.gameContainer = new _pixi2.default.Container();
@@ -38031,8 +38029,15 @@
 				this.startButton = playObj.button;
 				// utils.applyPositionCorrection(this.startButton);
 				this.screenContainer.addChild(this.startButton);
-				this.startButton.position.set(_config2.default.width / 2 - playObj.size.width / 2, _config2.default.height / 2);
+				this.startButton.position.set(_config2.default.width / 2 - playObj.size.width / 2, _config2.default.height / 2 - playObj.size.height);
 				_gsap2.default.from(this.startButton.position, 1, { delay: 0.5, y: _config2.default.height + playObj.size.height, ease: "easeOutBack" });
+	
+				var playHardObj = this.createPlayButton("HARDCORE");
+				this.hardCoreButton = playHardObj.button;
+				// utils.applyPositionCorrection(this.hardCoreButton);
+				this.screenContainer.addChild(this.hardCoreButton);
+				this.hardCoreButton.position.set(_config2.default.width / 2 - playHardObj.size.width / 2, _config2.default.height / 2 + playHardObj.size.height / 2);
+				_gsap2.default.from(this.hardCoreButton.position, 1, { delay: 0.7, y: _config2.default.height + playHardObj.size.height + 50, ease: "easeOutBack" });
 	
 				//create pause button
 				this.pauseButton = this.createButton("P").button;
@@ -38071,6 +38076,7 @@
 		}, {
 			key: 'removeEvents',
 			value: function removeEvents() {
+				this.hardCoreButton.off('tap').off('click');
 				this.startButton.off('tap').off('click');
 				this.backButton.off('tap').off('click');
 				this.pauseButton.off('tap').off('click');
@@ -38081,7 +38087,8 @@
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
-				this.startButton.on('tap', this.initGame.bind(this)).on('click', this.initGame.bind(this));
+				this.hardCoreButton.on('tap', this.initGameHardcore.bind(this)).on('click', this.initGameHardcore.bind(this));
+				this.startButton.on('tap', this.initGameNormal.bind(this)).on('click', this.initGameNormal.bind(this));
 				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
 				this.pauseButton.on('tap', this.onPauseCallback.bind(this)).on('click', this.onPauseCallback.bind(this));
 				this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
@@ -38281,6 +38288,7 @@
 						added = this.addElementOnColum(rndPlay, 2).added;
 						rndPlay = Math.floor(Math.random() * this.gameMatrix.length);
 					};
+					this.resetTimer();
 				}.bind(this), 400);
 			}
 			//verify if have winner
@@ -38551,10 +38559,16 @@
 				var labelStatus = "DRAW";
 				if (idWinner == 1) {
 					labelStatus = "YOU WIN";
+					this.endContainer.setStatus("LEVEL " + (_config2.default.currentLevel + 1), 0);
 				} else if (idWinner == 2) {
 					labelStatus = "YOU LOOSE";
+					this.endContainer.setStatus(labelStatus, 1);
+				} else {
+					this.endContainer.setStatus("LEVEL " + (_config2.default.currentLevel + 1), -1);
 				}
-				this.endContainer.setStatus(labelStatus);
+				this.labelTimer.text = labelStatus;
+				this.labelTimer.position.x = _config2.default.width / 2 - this.labelTimer.width / 2 + _config2.default.hitCorrection.x;
+	
 				this.endContainer.show(delay);
 			}
 		}, {
@@ -38610,8 +38624,27 @@
 			//init game
 	
 		}, {
+			key: 'initGameNormal',
+			value: function initGameNormal() {
+				_config2.default.currentLevel = 0;
+				this.initGame();
+			}
+		}, {
+			key: 'initGameHardcore',
+			value: function initGameHardcore() {
+				_config2.default.currentLevel = _config2.default.levels.length - 1;
+				this.initGame();
+			}
+		}, {
 			key: 'initGame',
 			value: function initGame() {
+				this.levelConf = _config2.default.levels[_config2.default.currentLevel];
+				//game bounds
+				this.matrixBounds = this.levelConf.bounds;
+				//connect number
+				this.currentConnectFactor = this.levelConf.connect;
+				this.timerMax = this.levelConf.timer;
+	
 				this.labelInstruction.visible = true;
 				this.labelTimer.visible = true;
 				this.pauseButton.visible = true;
@@ -38641,7 +38674,10 @@
 				this.normalizedDelta = 1;
 				//hide start button
 				_gsap2.default.killTweensOf(this.startButton.position);
-				_gsap2.default.to(this.startButton.position, 0.4, { y: _config2.default.height + this.startButton.height, ease: "easeInBack" });
+				_gsap2.default.to(this.startButton.position, 0.4, { delay: 0.2, y: _config2.default.height + this.startButton.height, ease: "easeInBack" });
+	
+				_gsap2.default.killTweensOf(this.hardCoreButton.position);
+				_gsap2.default.to(this.hardCoreButton.position, 0.4, { y: _config2.default.height + this.hardCoreButton.height, ease: "easeInBack" });
 				//show game container
 				this.gameContainer.visible = true;
 				this.gameContainer.alpha = 0;
@@ -38925,7 +38961,7 @@
 			value: function createPlayButton(label) {
 				var button = new _pixi2.default.Container();
 				var shape = new _pixi2.default.Graphics();
-				var descriptionLabel = new _pixi2.default.Text(label, { font: '120px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				var descriptionLabel = new _pixi2.default.Text(label, { font: '80px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
 				var color = 0x00FFFF;
 				shape.beginFill(color);
 				shape.drawRect(0, 0, descriptionLabel.width, descriptionLabel.height);
@@ -38963,7 +38999,7 @@
 	exports.default = GameScreen;
 
 /***/ },
-/* 147 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39043,7 +39079,7 @@
 	};
 
 /***/ },
-/* 148 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39175,7 +39211,7 @@
 	exports.default = Screen;
 
 /***/ },
-/* 149 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39194,7 +39230,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _gsap = __webpack_require__(144);
+	var _gsap = __webpack_require__(143);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -39237,7 +39273,300 @@
 	exports.default = Line;
 
 /***/ },
+/* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _config = __webpack_require__(140);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(146);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _gsap = __webpack_require__(143);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var PauseContainer = function (_PIXI$Container) {
+		_inherits(PauseContainer, _PIXI$Container);
+	
+		function PauseContainer(screen) {
+			_classCallCheck(this, PauseContainer);
+	
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PauseContainer).call(this));
+	
+			_this.screen = screen;
+			var buttonDistance = 65;
+			var continueButtonConfig = _this.createButton("CONTINUE");
+			_this.continueButton = continueButtonConfig.button;
+			_this.addChild(_this.continueButton);
+			_this.continueButton.position.set(_config2.default.width / 2 - continueButtonConfig.size.width / 2, _config2.default.height / 2 + continueButtonConfig.size.height / 2);
+	
+			var reestartButtonConfig = _this.createButton("RESTART");
+			_this.reestartButton = reestartButtonConfig.button;
+			_this.addChild(_this.reestartButton);
+			_this.reestartButton.position.set(_config2.default.width / 2 - reestartButtonConfig.size.width / 2, _this.continueButton.position.y + buttonDistance);
+	
+			var backButtonConfig = _this.createButton("BACK");
+			_this.backButton = backButtonConfig.button;
+			_this.addChild(_this.backButton);
+			_this.backButton.position.set(_config2.default.width / 2 - backButtonConfig.size.width / 2, _this.reestartButton.position.y + buttonDistance);
+			// utils.applyPositionCorrection(this);
+			return _this;
+		}
+	
+		_createClass(PauseContainer, [{
+			key: 'show',
+			value: function show() {
+				this.visible = true;
+				_gsap2.default.to(this.position, 1, { y: 0, ease: "easeOutBack" });
+				this.addEvents();
+			}
+		}, {
+			key: 'hide',
+			value: function hide(force) {
+				_gsap2.default.to(this.position, force ? 0 : 1, { y: _config2.default.height / 2, ease: "easeOutBack", onComplete: this.disable, onCompleteScope: this });
+				this.removeEvents();
+			}
+		}, {
+			key: 'disable',
+			value: function disable() {
+				this.visible = false;
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.reestartButton.off('tap').off('click');
+				this.backButton.off('tap').off('click');
+				this.continueButton.off('tap').off('click');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				this.reestartButton.on('tap', this.onReestartCallback.bind(this)).on('click', this.onReestartCallback.bind(this));
+				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
+				this.continueButton.on('tap', this.onContinueCallback.bind(this)).on('click', this.onContinueCallback.bind(this));
+			}
+		}, {
+			key: 'onReestartCallback',
+			value: function onReestartCallback() {
+				this.screen.initGame();
+			}
+		}, {
+			key: 'onBackCallback',
+			value: function onBackCallback() {
+				this.screen.onBackCallback();
+			}
+		}, {
+			key: 'onContinueCallback',
+			value: function onContinueCallback() {
+				this.screen.onPauseCallback();
+			}
+		}, {
+			key: 'createButton',
+			value: function createButton(label) {
+				var button = new _pixi2.default.Container();
+				var descriptionLabel = new _pixi2.default.Text(label, { font: '50px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				var color = 0x00FFFF;
+				button.addChild(descriptionLabel);
+				button.interactive = true;
+				button.buttonMode = true;
+				_utils2.default.addMockRect(button, descriptionLabel.width, descriptionLabel.height);
+				return { button: button, size: { width: descriptionLabel.width, height: descriptionLabel.height } };
+			}
+		}]);
+	
+		return PauseContainer;
+	}(_pixi2.default.Container);
+	
+	exports.default = PauseContainer;
+
+/***/ },
 /* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _config = __webpack_require__(140);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(146);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _gsap = __webpack_require__(143);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var EndContainer = function (_PIXI$Container) {
+		_inherits(EndContainer, _PIXI$Container);
+	
+		function EndContainer(screen) {
+			_classCallCheck(this, EndContainer);
+	
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EndContainer).call(this));
+	
+			_this.screen = screen;
+			var buttonDistance = 65;
+	
+			_this.status = new _pixi2.default.Text('---', { font: '150px super_smash_tvregular', fill: 0xFFFFFF, align: 'right', dropShadow: true, dropShadowColor: '#666666' });
+			_this.addChild(_this.status);
+			_this.status.position.set(_config2.default.width / 2 - _this.status.width / 2, 20);
+	
+			var reestartButtonConfig = _this.createButton("TO EASY?");
+			_this.restartLabel = reestartButtonConfig.label;
+			_this.reestartButton = reestartButtonConfig.button;
+			_this.addChild(_this.reestartButton);
+			_this.reestartButton.position.set(_config2.default.width / 2 - reestartButtonConfig.size.width / 2, _config2.default.height / 2 + reestartButtonConfig.size.height / 2);
+	
+			var backButtonConfig = _this.createButton("BACK");
+			_this.backButton = backButtonConfig.button;
+			_this.addChild(_this.backButton);
+			_this.backButton.position.set(_config2.default.width / 2 - backButtonConfig.size.width / 2, _this.reestartButton.position.y + buttonDistance);
+			_utils2.default.applyPositionCorrection(_this);
+			return _this;
+		}
+	
+		_createClass(EndContainer, [{
+			key: 'setStatus',
+			value: function setStatus(label, lost) {
+				this.status.text = label;
+				this.lost = lost;
+				if (lost > 0) {
+					this.restartLabel.text = "LEVEL -1";
+				} else if (lost < 0) {
+					this.restartLabel.text = "AGAIN";
+				} else {
+					this.restartLabel.text = "LEVEL +1";
+				}
+				if (_config2.default.currentLevel >= _config2.default.levels.length - 1) {
+					this.status.text = "AWESOME";
+					this.restartLabel.text = "AGAIN?";
+				}
+				this.status.position.set(_config2.default.width / 2 - this.status.width / 2, 20);
+			}
+		}, {
+			key: 'show',
+			value: function show(delay) {
+				this.visible = true;
+				_gsap2.default.to(this.position, 1, { delay: delay ? delay : 0, y: 0, ease: "easeOutBack" });
+				this.status.position.y = -500;
+				this.status.alpha = 1;
+				_gsap2.default.to(this.status.position, 1, { delay: delay ? delay + 0.5 : 0.5, y: 60, ease: "easeOutBack" });
+				this.addEvents();
+			}
+		}, {
+			key: 'hide',
+			value: function hide(force) {
+				_gsap2.default.to(this.status, 1, { alpha: 0 });
+				_gsap2.default.to(this.status.position, 1, { y: -500 });
+				_gsap2.default.to(this.position, force ? 0 : 1, { y: _config2.default.height / 2, ease: "easeOutBack", onComplete: this.disable, onCompleteScope: this });
+				this.removeEvents();
+			}
+		}, {
+			key: 'disable',
+			value: function disable() {
+				this.visible = false;
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.reestartButton.off('tap').off('click');
+				this.backButton.off('tap').off('click');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.reestartButton.on('tap', this.onReestartCallback.bind(this)).on('click', this.onReestartCallback.bind(this));
+				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
+			}
+		}, {
+			key: 'onReestartCallback',
+			value: function onReestartCallback() {
+				if (this.lost == 0) {
+					if (_config2.default.currentLevel < _config2.default.levels.length - 1) {
+						_config2.default.currentLevel++;
+					}
+				} else if (this.lost == 1) {
+					_config2.default.currentLevel--;
+					if (_config2.default.currentLevel <= 0) {
+						_config2.default.currentLevel = 0;
+					}
+				}
+				this.screen.initGame();
+			}
+		}, {
+			key: 'onBackCallback',
+			value: function onBackCallback() {
+				this.screen.onBackCallback();
+			}
+		}, {
+			key: 'onContinueCallback',
+			value: function onContinueCallback() {
+				this.screen.onPauseCallback();
+			}
+		}, {
+			key: 'createButton',
+			value: function createButton(label) {
+				var button = new _pixi2.default.Container();
+				var descriptionLabel = new _pixi2.default.Text(label, { font: '50px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
+				var color = 0x00FFFF;
+				button.addChild(descriptionLabel);
+				button.interactive = true;
+				button.buttonMode = true;
+				_utils2.default.addMockRect(button, descriptionLabel.width, descriptionLabel.height);
+				return { button: button, size: { width: descriptionLabel.width, height: descriptionLabel.height }, label: descriptionLabel };
+			}
+		}]);
+	
+		return EndContainer;
+	}(_pixi2.default.Container);
+	
+	exports.default = EndContainer;
+
+/***/ },
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39254,7 +39583,7 @@
 	
 	var _pixi2 = _interopRequireDefault(_pixi);
 	
-	var _gsap = __webpack_require__(144);
+	var _gsap = __webpack_require__(143);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -39262,11 +39591,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(147);
+	var _utils = __webpack_require__(146);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(148);
+	var _Screen2 = __webpack_require__(147);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
@@ -39408,7 +39737,7 @@
 	exports.default = InitScreen;
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39498,274 +39827,6 @@
 	}(_pixi2.default.Container);
 	
 	exports.default = ScreenManager;
-
-/***/ },
-/* 152 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var _pixi2 = _interopRequireDefault(_pixi);
-	
-	var _config = __webpack_require__(140);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _utils = __webpack_require__(147);
-	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	var _gsap = __webpack_require__(144);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var PauseContainer = function (_PIXI$Container) {
-		_inherits(PauseContainer, _PIXI$Container);
-	
-		function PauseContainer(screen) {
-			_classCallCheck(this, PauseContainer);
-	
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PauseContainer).call(this));
-	
-			_this.screen = screen;
-			var buttonDistance = 65;
-			var continueButtonConfig = _this.createButton("CONTINUE");
-			_this.continueButton = continueButtonConfig.button;
-			_this.addChild(_this.continueButton);
-			_this.continueButton.position.set(_config2.default.width / 2 - continueButtonConfig.size.width / 2, _config2.default.height / 2 + continueButtonConfig.size.height / 2);
-	
-			var reestartButtonConfig = _this.createButton("RESTART");
-			_this.reestartButton = reestartButtonConfig.button;
-			_this.addChild(_this.reestartButton);
-			_this.reestartButton.position.set(_config2.default.width / 2 - reestartButtonConfig.size.width / 2, _this.continueButton.position.y + buttonDistance);
-	
-			var backButtonConfig = _this.createButton("BACK");
-			_this.backButton = backButtonConfig.button;
-			_this.addChild(_this.backButton);
-			_this.backButton.position.set(_config2.default.width / 2 - backButtonConfig.size.width / 2, _this.reestartButton.position.y + buttonDistance);
-			return _this;
-		}
-	
-		_createClass(PauseContainer, [{
-			key: 'show',
-			value: function show() {
-				this.visible = true;
-				_gsap2.default.to(this.position, 1, { y: 0, ease: "easeOutBack" });
-				this.addEvents();
-			}
-		}, {
-			key: 'hide',
-			value: function hide(force) {
-				_gsap2.default.to(this.position, force ? 0 : 1, { y: _config2.default.height / 2, ease: "easeOutBack", onComplete: this.disable, onCompleteScope: this });
-				this.removeEvents();
-			}
-		}, {
-			key: 'disable',
-			value: function disable() {
-				this.visible = false;
-			}
-		}, {
-			key: 'removeEvents',
-			value: function removeEvents() {
-				this.reestartButton.off('tap').off('click');
-				this.backButton.off('tap').off('click');
-				this.continueButton.off('tap').off('click');
-			}
-		}, {
-			key: 'addEvents',
-			value: function addEvents() {
-				this.removeEvents();
-				this.reestartButton.on('tap', this.onReestartCallback.bind(this)).on('click', this.onReestartCallback.bind(this));
-				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
-				this.continueButton.on('tap', this.onContinueCallback.bind(this)).on('click', this.onContinueCallback.bind(this));
-			}
-		}, {
-			key: 'onReestartCallback',
-			value: function onReestartCallback() {
-				this.screen.initGame();
-			}
-		}, {
-			key: 'onBackCallback',
-			value: function onBackCallback() {
-				this.screen.onBackCallback();
-			}
-		}, {
-			key: 'onContinueCallback',
-			value: function onContinueCallback() {
-				this.screen.onPauseCallback();
-			}
-		}, {
-			key: 'createButton',
-			value: function createButton(label) {
-				var button = new _pixi2.default.Container();
-				var descriptionLabel = new _pixi2.default.Text(label, { font: '50px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
-				var color = 0x00FFFF;
-				button.addChild(descriptionLabel);
-				button.interactive = true;
-				button.buttonMode = true;
-				_utils2.default.addMockRect(button, descriptionLabel.width, descriptionLabel.height);
-				return { button: button, size: { width: descriptionLabel.width, height: descriptionLabel.height } };
-			}
-		}]);
-	
-		return PauseContainer;
-	}(_pixi2.default.Container);
-	
-	exports.default = PauseContainer;
-
-/***/ },
-/* 153 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var _pixi2 = _interopRequireDefault(_pixi);
-	
-	var _config = __webpack_require__(140);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _utils = __webpack_require__(147);
-	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	var _gsap = __webpack_require__(144);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var EndContainer = function (_PIXI$Container) {
-		_inherits(EndContainer, _PIXI$Container);
-	
-		function EndContainer(screen) {
-			_classCallCheck(this, EndContainer);
-	
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EndContainer).call(this));
-	
-			_this.screen = screen;
-			var buttonDistance = 65;
-	
-			_this.status = new _pixi2.default.Text('---', { font: '150px super_smash_tvregular', fill: 0xFFFFFF, align: 'right', dropShadow: true, dropShadowColor: '#666666' });
-			_this.addChild(_this.status);
-			_this.status.position.set(_config2.default.width / 2 - _this.status.width / 2, 0);
-	
-			var reestartButtonConfig = _this.createButton("RESTART");
-			_this.reestartButton = reestartButtonConfig.button;
-			_this.addChild(_this.reestartButton);
-			_this.reestartButton.position.set(_config2.default.width / 2 - reestartButtonConfig.size.width / 2, _config2.default.height / 2 + reestartButtonConfig.size.height / 2);
-	
-			var backButtonConfig = _this.createButton("BACK");
-			_this.backButton = backButtonConfig.button;
-			_this.addChild(_this.backButton);
-			_this.backButton.position.set(_config2.default.width / 2 - backButtonConfig.size.width / 2, _this.reestartButton.position.y + buttonDistance);
-			return _this;
-		}
-	
-		_createClass(EndContainer, [{
-			key: 'setStatus',
-			value: function setStatus(label) {
-				this.status.text = label;
-				this.status.position.set(_config2.default.width / 2 - this.status.width / 2, 0);
-			}
-		}, {
-			key: 'show',
-			value: function show(delay) {
-				this.visible = true;
-				_gsap2.default.to(this.position, 1, { delay: delay ? delay : 0, y: 0, ease: "easeOutBack" });
-				this.status.position.y = -500;
-				this.status.alpha = 1;
-				_gsap2.default.to(this.status.position, 1, { delay: delay ? delay + 0.5 : 0.5, y: 30, ease: "easeOutBack" });
-				this.addEvents();
-			}
-		}, {
-			key: 'hide',
-			value: function hide(force) {
-				_gsap2.default.to(this.status, 1, { alpha: 0 });
-				_gsap2.default.to(this.status.position, 1, { y: -500 });
-				_gsap2.default.to(this.position, force ? 0 : 1, { y: _config2.default.height / 2, ease: "easeOutBack", onComplete: this.disable, onCompleteScope: this });
-				this.removeEvents();
-			}
-		}, {
-			key: 'disable',
-			value: function disable() {
-				this.visible = false;
-			}
-		}, {
-			key: 'removeEvents',
-			value: function removeEvents() {
-				this.reestartButton.off('tap').off('click');
-				this.backButton.off('tap').off('click');
-			}
-		}, {
-			key: 'addEvents',
-			value: function addEvents() {
-				this.reestartButton.on('tap', this.onReestartCallback.bind(this)).on('click', this.onReestartCallback.bind(this));
-				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
-			}
-		}, {
-			key: 'onReestartCallback',
-			value: function onReestartCallback() {
-				this.screen.initGame();
-			}
-		}, {
-			key: 'onBackCallback',
-			value: function onBackCallback() {
-				this.screen.onBackCallback();
-			}
-		}, {
-			key: 'onContinueCallback',
-			value: function onContinueCallback() {
-				this.screen.onPauseCallback();
-			}
-		}, {
-			key: 'createButton',
-			value: function createButton(label) {
-				var button = new _pixi2.default.Container();
-				var descriptionLabel = new _pixi2.default.Text(label, { font: '50px super_smash_tvregular', fill: 0xFFFFFF, align: 'right' });
-				var color = 0x00FFFF;
-				button.addChild(descriptionLabel);
-				button.interactive = true;
-				button.buttonMode = true;
-				_utils2.default.addMockRect(button, descriptionLabel.width, descriptionLabel.height);
-				return { button: button, size: { width: descriptionLabel.width, height: descriptionLabel.height } };
-			}
-		}]);
-	
-		return EndContainer;
-	}(_pixi2.default.Container);
-	
-	exports.default = EndContainer;
 
 /***/ }
 /******/ ]);

@@ -22,6 +22,7 @@ export default class PauseContainer extends PIXI.Container{
 		this.backButton = backButtonConfig.button;
 		this.addChild(this.backButton);
 		this.backButton.position.set(config.width / 2 -backButtonConfig.size.width/2, this.reestartButton.position.y + buttonDistance);
+		// utils.applyPositionCorrection(this);
 	}
 	show(){
 		this.visible = true;

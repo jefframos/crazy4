@@ -6,7 +6,21 @@
 	buttonRadius: 30,
 	debugAlpha: 0,
 	isJuicy: 1,
+	hardcore: false,
 	webgl: true,
+	levels: [
+		{timer: 6, bounds:{i:4, j:5}, connect:3},
+		{timer: 3, bounds:{i:4, j:5}, connect:3},
+		{timer: 2, bounds:{i:4, j:7}, connect:3},
+		{timer: 5, bounds:{i:5, j:5}, connect:4},
+		{timer: 3, bounds:{i:5, j:5}, connect:4},
+		{timer: 2, bounds:{i:5, j:5}, connect:4},
+		{timer: 5, bounds:{i:5, j:9}, connect:5},
+		{timer: 3, bounds:{i:5, j:11}, connect:5},
+		{timer: 2, bounds:{i:5, j:11}, connect:5},
+		{timer: 1.5, bounds:{i:5, j:13}, connect:5},
+	],
+	currentLevel: 0,
 	firstEntry:false,
 	rendererOptions: {
 		//pixi rendererOptions
