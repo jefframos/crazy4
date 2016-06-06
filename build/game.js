@@ -38092,7 +38092,8 @@
 				this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));
 				this.pauseButton.on('tap', this.onPauseCallback.bind(this)).on('click', this.onPauseCallback.bind(this));
 				this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
-				this.on('mouseup', this.onGameClickCallback.bind(this));
+				this.on('mouseup', this.onGameClickCallback.bind(this)).on('tap', this.onGameClickCallback.bind(this));
+				//this.gameContainer.on('click', this.onGameClickCallback.bind(this)).on('tap', this.onGameClickCallback.bind(this));	  
 			}
 		}, {
 			key: 'onMouseMoveCallback',
@@ -38102,6 +38103,7 @@
 				}
 				var width = e.target.width * e.target.scale.x - this.dotRadius / 2;
 				var realativePosition = e.data.global.x - (e.target.position.x - width / 2) - this.dotRadius / 2;
+				//console.log(e.data.global.x, e.target.position.x, e.target.width , e.target.scale.x,this.dotRadius/2, 'move');
 				if (_config2.default.isJuicy) {
 					this.findCol(realativePosition + _config2.default.hitCorrection.x, width);
 				} else {
@@ -38110,9 +38112,17 @@
 			}
 		}, {
 			key: 'onGameClickCallback',
-			value: function onGameClickCallback() {
+			value: function onGameClickCallback(e) {
 				if (!this.playerRound || !this.started || this.ended) {
 					return;
+				}
+				var width = e.target.gameContainer.width * e.target.gameContainer.scale.x - this.dotRadius / 2;
+				var realativePosition = e.data.global.x - (e.target.gameContainer.position.x - width / 2) - this.dotRadius / 2;
+				console.log(e.data.global.x, e.target.gameContainer.position.x, e.target.gameContainer.width, e.target.gameContainer.scale.x, this.dotRadius / 2, 'click');
+				if (_config2.default.isJuicy) {
+					this.findCol(realativePosition + _config2.default.hitCorrection.x, width);
+				} else {
+					this.findCol(realativePosition, width);
 				}
 				if (this.addElementOnColum(this.currentColum, 1).added) {
 					this.lastColum = this.currentColum;

@@ -147,7 +147,8 @@ export default class GameScreen extends Screen{
 	    this.backButton.on('tap', this.onBackCallback.bind(this)).on('click', this.onBackCallback.bind(this));	    
 	    this.pauseButton.on('tap', this.onPauseCallback.bind(this)).on('click', this.onPauseCallback.bind(this));	    
 	    this.gameContainer.on('mousemove', this.onMouseMoveCallback.bind(this));
-	    this.on('mouseup', this.onGameClickCallback.bind(this));	    
+	    this.on('mouseup', this.onGameClickCallback.bind(this)).on('tap', this.onGameClickCallback.bind(this));	    
+	    //this.gameContainer.on('click', this.onGameClickCallback.bind(this)).on('tap', this.onGameClickCallback.bind(this));	    
 	}
 	onMouseMoveCallback(e) {
 		if(!this.started || this.ended){
@@ -155,15 +156,24 @@ export default class GameScreen extends Screen{
 		}
 		let width = e.target.width * e.target.scale.x- this.dotRadius/2;
 		let realativePosition = e.data.global.x - (e.target.position.x - width/ 2) - this.dotRadius/2;
+		//console.log(e.data.global.x, e.target.position.x, e.target.width , e.target.scale.x,this.dotRadius/2, 'move');
 		if(config.isJuicy){
 			this.findCol(realativePosition + config.hitCorrection.x, width);
 		}else{
 			this.findCol(realativePosition, width);
 		}
 	}
-	onGameClickCallback() {
+	onGameClickCallback(e) {
 		if(!this.playerRound || !this.started || this.ended){
 			return;
+		}
+		let width = e.target.gameContainer.width * e.target.gameContainer.scale.x- this.dotRadius/2;
+		let realativePosition = e.data.global.x - (e.target.gameContainer.position.x - width/ 2) - this.dotRadius/2;
+		console.log(e.data.global.x, e.target.gameContainer.position.x, e.target.gameContainer.width , e.target.gameContainer.scale.x,this.dotRadius/2, 'click');
+		if(config.isJuicy){
+			this.findCol(realativePosition + config.hitCorrection.x, width);
+		}else{
+			this.findCol(realativePosition, width);
 		}
 		if(this.addElementOnColum(this.currentColum, 1).added){
 			this.lastColum = this.currentColum;
